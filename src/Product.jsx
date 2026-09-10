@@ -7,13 +7,12 @@ const Product = () => {
   const [Datas, setDatas] = useState([]);
   const [editId, setEditId] = useState(null);
   useEffect(() => {
-    fetch("http://localhost:3000/products")
+    fetch("https://product-backend-nfij.onrender.com/products")
       .then((res) => res.json())
       .then((data) => {
         setDatas(data);
       });
   }, []);
-
   const data = {
     product: Product,
     price: Price,
@@ -23,7 +22,7 @@ const Product = () => {
     e.preventDefault();
 
     if (editId !== null) {
-      fetch(`http://localhost:3000/products/${editId}`, {
+      fetch(`https://product-backend-nfij.onrender.com/products/${editId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -43,7 +42,7 @@ const Product = () => {
           setPrice("");
         });
     } else {
-      fetch("http://localhost:3000/products", {
+      fetch("https://product-backend-nfij.onrender.com/products", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -60,7 +59,7 @@ const Product = () => {
   };
 
   const handelDelete = (id) => {
-    fetch(`http://localhost:3000/products/${id}`, {
+    fetch(`https://product-backend-nfij.onrender.com/products/${id}`, {
       method: "DELETE",
     }).then(() => {
       setDatas((oldData) => oldData.filter((item) => item.id !== id));
