@@ -1,5 +1,7 @@
 import { useEffect } from "react";
 import { useState } from "react";
+import toast, { Toaster } from "react-hot-toast";
+import "react-toastify/dist/ReactToastify.css";
 
 const Product = () => {
   const API_URL = import.meta.env.VITE_API_URL;
@@ -7,6 +9,7 @@ const Product = () => {
   const [Price, setPrice] = useState("");
   const [Datas, setDatas] = useState([]);
   const [editId, setEditId] = useState(null);
+
   useEffect(() => {
     fetch(`${API_URL}/products`)
       .then((res) => res.json())
@@ -14,6 +17,7 @@ const Product = () => {
         setDatas(data);
       });
   }, []);
+
   const data = {
     product: Product,
     price: Price,
@@ -41,6 +45,8 @@ const Product = () => {
           setEditId(null);
           setProduct("");
           setPrice("");
+
+         toast.success("Product updated successfully!");
         });
     } else {
       fetch(`${API_URL}/products`, {
@@ -55,6 +61,8 @@ const Product = () => {
           setDatas((oldData) => [...oldData, newProduct]);
           setProduct("");
           setPrice("");
+
+         toast.success("Product added successfully! 🛒");
         });
     }
   };
@@ -64,6 +72,8 @@ const Product = () => {
       method: "DELETE",
     }).then(() => {
       setDatas((oldData) => oldData.filter((item) => item.id !== id));
+
+      toast.success("Product deleted successfully!");
     });
   };
 
@@ -72,13 +82,19 @@ const Product = () => {
     setProduct(item.product);
     setPrice(item.price);
   };
+
   return (
     <div className="min-h-screen bg-gray-100 py-10 px-4">
       <div className="max-w-5xl mx-auto">
         {/* Heading */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Product Manager</h1>
-          <p className="text-gray-500 mt-1">Add and manage your products</p>
+          <h1 className="text-3xl font-bold text-gray-900">
+            Product Manager
+          </h1>
+
+          <p className="text-gray-500 mt-1">
+            Add and manage your products
+          </p>
         </div>
 
         {/* Add Product Form */}
@@ -87,7 +103,10 @@ const Product = () => {
             Add New Product
           </h2>
 
-          <form onSubmit={handelChange} className="grid md:grid-cols-2 gap-5">
+          <form
+            onSubmit={handelChange}
+            className="grid md:grid-cols-2 gap-5"
+          >
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Product Name
@@ -129,7 +148,9 @@ const Product = () => {
 
         {/* Products */}
         <div>
-          <h2 className="text-xl font-semibold text-gray-800 mb-4">Products</h2>
+          <h2 className="text-xl font-semibold text-gray-800 mb-4">
+            Products
+          </h2>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {Datas.map((item) => (
@@ -177,6 +198,12 @@ const Product = () => {
           </div>
         </div>
       </div>
+
+      {/* Toast */}
+     <Toaster
+  position="top-center"
+  reverseOrder={false}
+/>
     </div>
   );
 };
