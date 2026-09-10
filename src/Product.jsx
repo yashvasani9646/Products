@@ -9,8 +9,6 @@ const Product = () => {
   const [editId, setEditId] = useState(null);
   useEffect(() => {
     fetch(`${API_URL}/products`)
-
-
       .then((res) => res.json())
       .then((data) => {
         setDatas(data);
@@ -123,7 +121,7 @@ const Product = () => {
                 type="submit"
                 className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-xl transition duration-200"
               >
-                Add Product
+                {editId !== null ? "Update Product" : "Add Product"}
               </button>
             </div>
           </form>
