@@ -2,12 +2,15 @@ import { useEffect } from "react";
 import { useState } from "react";
 
 const Product = () => {
+  const API_URL = import.meta.env.VITE_API_URL;
   const [Product, setProduct] = useState("");
   const [Price, setPrice] = useState("");
   const [Datas, setDatas] = useState([]);
   const [editId, setEditId] = useState(null);
   useEffect(() => {
-    fetch("https://product-backend-nfij.onrender.com/products")
+    fetch(`${API_URL}/products`)
+
+
       .then((res) => res.json())
       .then((data) => {
         setDatas(data);
@@ -22,7 +25,7 @@ const Product = () => {
     e.preventDefault();
 
     if (editId !== null) {
-      fetch(`https://product-backend-nfij.onrender.com/products/${editId}`, {
+      fetch(`${API_URL}/products/${editId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -42,7 +45,7 @@ const Product = () => {
           setPrice("");
         });
     } else {
-      fetch("https://product-backend-nfij.onrender.com/products", {
+      fetch(`${API_URL}/products`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -59,7 +62,7 @@ const Product = () => {
   };
 
   const handelDelete = (id) => {
-    fetch(`https://product-backend-nfij.onrender.com/products/${id}`, {
+    fetch(`${API_URL}/products/${id}`, {
       method: "DELETE",
     }).then(() => {
       setDatas((oldData) => oldData.filter((item) => item.id !== id));
