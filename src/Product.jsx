@@ -9,6 +9,7 @@ const Product = () => {
   const [Price, setPrice] = useState("");
   const [Datas, setDatas] = useState([]);
   const [editId, setEditId] = useState(null);
+  const [errors, setErrors] = useState({});
 
   useEffect(() => {
     fetch(`${API_URL}/products`)
@@ -26,6 +27,20 @@ const Product = () => {
   const handelChange = (e) => {
     e.preventDefault();
 
+    let newErrors = {};
+    if (!Product) {
+      newErrors.Product = "Product name is required";
+    }
+
+    if (!Price) {
+      newErrors.Price = "Price is required";
+    }
+
+    setErrors(newErrors);
+
+    if (Object.keys(newErrors).length > 0) {
+      return;
+    }
     if (editId !== null) {
       fetch(`${API_URL}/products/${editId}`, {
         method: "PUT",
@@ -46,7 +61,7 @@ const Product = () => {
           setProduct("");
           setPrice("");
 
-         toast.success("Product updated successfully!");
+          toast.success("Product updated successfully!");
         });
     } else {
       fetch(`${API_URL}/products`, {
@@ -56,25 +71,62 @@ const Product = () => {
         },
         body: JSON.stringify(data),
       })
-        .then((res) => res.json())
+        .then((res) => {
+          if (!res.ok) {
+            return res.json().then((error) => {
+              throw new Error(error.error);
+            });
+          }
+
+          return res.json();
+        })
         .then((newProduct) => {
           setDatas((oldData) => [...oldData, newProduct]);
           setProduct("");
           setPrice("");
 
-         toast.success("Product added successfully! 🛒");
+          toast.success("Product added successfully! 🛒");
+        })
+        .catch((error) => {
+          toast.error(error.message);
         });
     }
   };
 
   const handelDelete = (id) => {
-    fetch(`${API_URL}/products/${id}`, {
-      method: "DELETE",
-    }).then(() => {
-      setDatas((oldData) => oldData.filter((item) => item.id !== id));
+    toast.custom((t) => (
+      <div className="bg-white p-5 rounded-xl shadow-xl border border-gray-200">
+        <p className="font-semibold text-gray-800 mb-4">
+          Are you sure you want to delete this product?
+        </p>
 
-      toast.success("Product deleted successfully!");
-    });
+        <div className="flex gap-3">
+          <button
+            onClick={() => {
+              fetch(`${API_URL}/products/${id}`, {
+                method: "DELETE",
+              }).then(() => {
+                setDatas((oldData) => oldData.filter((item) => item.id !== id));
+
+                toast.dismiss(t.id);
+
+                toast.success("Product deleted successfully!");
+              });
+            }}
+            className="bg-red-500 text-white px-4 py-2 rounded-lg"
+          >
+            Yes
+          </button>
+
+          <button
+            onClick={() => toast.dismiss(t.id)}
+            className="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg"
+          >
+            No
+          </button>
+        </div>
+      </div>
+    ));
   };
 
   const handelEdit = (item) => {
@@ -88,13 +140,9 @@ const Product = () => {
       <div className="max-w-5xl mx-auto">
         {/* Heading */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">
-            Product Manager
-          </h1>
+          <h1 className="text-3xl font-bold text-gray-900">Product Manager</h1>
 
-          <p className="text-gray-500 mt-1">
-            Add and manage your products
-          </p>
+          <p className="text-gray-500 mt-1">Add and manage your products</p>
         </div>
 
         {/* Add Product Form */}
@@ -103,10 +151,7 @@ const Product = () => {
             Add New Product
           </h2>
 
-          <form
-            onSubmit={handelChange}
-            className="grid md:grid-cols-2 gap-5"
-          >
+          <form onSubmit={handelChange} className="grid md:grid-cols-2 gap-5">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Product Name
@@ -115,10 +160,26 @@ const Product = () => {
               <input
                 type="text"
                 value={Product}
-                onChange={(e) => setProduct(e.target.value)}
+                onChange={(e) => {
+                  setProduct(e.target.value);
+
+                  if (e.target.value) {
+                    setErrors((oldErrors) => ({
+                      ...oldErrors,
+                      Product: "",
+                    }));
+                  }
+                }}
                 placeholder="Enter product name"
-                className="w-full rounded-xl border border-gray-300 px-4 py-3 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition"
+                className={`w-full rounded-xl border px-4 py-3 outline-none transition ${
+                  errors.Product
+                    ? "border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-100"
+                    : "border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                }`}
               />
+              {errors.Product && (
+                <p className="text-red-500 text-sm mt-1">{errors.Product}</p>
+              )}
             </div>
 
             <div>
@@ -129,10 +190,26 @@ const Product = () => {
               <input
                 type="text"
                 value={Price}
-                onChange={(e) => setPrice(e.target.value)}
+                onChange={(e) => {
+                  setPrice(e.target.value);
+
+                  if (e.target.value) {
+                    setErrors((oldErrors) => ({
+                      ...oldErrors,
+                      Price: "",
+                    }));
+                  }
+                }}
                 placeholder="Enter price"
-                className="w-full rounded-xl border border-gray-300 px-4 py-3 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition"
+                className={`w-full rounded-xl border px-4 py-3 outline-none transition ${
+                  errors.Price
+                    ? "border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-100"
+                    : "border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                }`}
               />
+              {errors.Price && (
+                <p className="text-red-500 text-sm mt-1">{errors.Price}</p>
+              )}
             </div>
 
             <div className="md:col-span-2">
@@ -148,9 +225,7 @@ const Product = () => {
 
         {/* Products */}
         <div>
-          <h2 className="text-xl font-semibold text-gray-800 mb-4">
-            Products
-          </h2>
+          <h2 className="text-xl font-semibold text-gray-800 mb-4">Products</h2>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {Datas.map((item) => (
@@ -199,11 +274,7 @@ const Product = () => {
         </div>
       </div>
 
-      {/* Toast */}
-     <Toaster
-  position="top-center"
-  reverseOrder={false}
-/>
+      <Toaster position="top-center" reverseOrder={false} />
     </div>
   );
 };
