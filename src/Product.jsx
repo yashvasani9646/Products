@@ -88,7 +88,9 @@ const Product = () => {
           toast.success("Product added successfully! 🛒");
         })
         .catch((error) => {
-          toast.error(error.message);
+          toast.error(error.message, {
+            id: "product-error",
+          });
         });
     }
   };
