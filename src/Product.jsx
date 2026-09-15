@@ -56,7 +56,6 @@ const Product = () => {
       formData.append("product", Product);
       formData.append("price", Price);
       formData.append("category", category);
-      formData.append("available", available);
       formData.append("type", type);
       formData.append("available", available);
 
