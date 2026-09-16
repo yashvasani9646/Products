@@ -15,14 +15,6 @@ const Product = () => {
   const [image, setImage] = useState(null);
   const location = useLocation();
 
-  const data = {
-    product: Product,
-    price: Price,
-    category: category,
-    type: type,
-    available: available,
-  };
-
   const handelChange = (e) => {
     e.preventDefault();
 
@@ -64,8 +56,7 @@ const Product = () => {
       }
       fetch(`${API_URL}/products/${editId}`, {
         method: "PUT",
-        body:formData,
-       
+        body: formData,
       }).then(() => {
         navigate("/products");
         setEditId(null);
@@ -94,6 +85,9 @@ const Product = () => {
       fetch(`${API_URL}/products`, {
         method: "POST",
         body: formData,
+        headers: {
+          Authorization: localStorage.getItem("token"),
+        },
       })
         .then((res) => {
           if (!res.ok) {
@@ -130,17 +124,32 @@ const Product = () => {
     }
   }, [location.state]);
 
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    navigate("/register");
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 py-12 px-4">
       <div className="max-w-6xl mx-auto">
         {/* Heading */}
-        <div className="mb-10 text-center">
-          <h1 className="text-4xl font-extrabold bg-gradient-to-r from-blue-700 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
-            Product Manager
-          </h1>
-          <p className="text-gray-500 mt-2 text-lg">
-            Add and manage your products with ease
-          </p>
+        <div className="mb-10 flex items-center justify-between">
+          <div>
+            <h1 className="text-4xl font-extrabold bg-gradient-to-r from-blue-700 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
+              Product Manager
+            </h1>
+
+            <p className="text-gray-500 mt-2 text-lg">
+              Add and manage your products with ease
+            </p>
+          </div>
+
+          <button
+            onClick={handleLogout}
+            className="bg-red-500 hover:bg-red-600 text-white font-semibold px-5 py-3 rounded-xl shadow-md transition"
+          >
+            Sign Out
+          </button>
         </div>
 
         {/* Add Product Form */}
