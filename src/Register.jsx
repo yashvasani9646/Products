@@ -26,7 +26,7 @@ const Register = () => {
 
     console.log(userDate);
 
-    fetch("http://localhost:3000/register", {
+    fetch(`${import.meta.env.VITE_API_URL}/register`, {
       method: "POST",
       body: JSON.stringify(userDate),
       headers: {

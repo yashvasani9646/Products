@@ -16,7 +16,7 @@ const Login = () => {
     };
     console.log(userData);
 
-    fetch("http://localhost:3000/login", {
+   fetch(`${import.meta.env.VITE_API_URL}/register`, {
       method: "POST",
       body: JSON.stringify(userData),
       headers: {
