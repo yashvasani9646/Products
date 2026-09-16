@@ -5,6 +5,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 const Product = () => {
   const API_URL = import.meta.env.VITE_API_URL;
   const navigate = useNavigate();
+  const user = JSON.parse(localStorage.getItem("user"));
   const [Product, setProduct] = useState("");
   const [Price, setPrice] = useState("");
   const [editId, setEditId] = useState(null);
@@ -143,7 +144,10 @@ const Product = () => {
               Add and manage your products with ease
             </p>
           </div>
-
+          <div className="text-right">
+            <p className="font-semibold text-gray-800">{user?.name}</p>
+            <p className="text-sm text-gray-500">{user?.email}</p>
+          </div>
           <button
             onClick={handleLogout}
             className="bg-red-500 hover:bg-red-600 text-white font-semibold px-5 py-3 rounded-xl shadow-md transition"

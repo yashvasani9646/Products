@@ -5,7 +5,7 @@ import { IoArrowBackSharp } from "react-icons/io5";
 
 const ProductTable = () => {
   const navigate = useNavigate();
-
+  const user = JSON.parse(localStorage.getItem("user"));
   const API_URL = import.meta.env.VITE_API_URL;
 
   const [products, setProducts] = useState([]);
@@ -68,9 +68,16 @@ const ProductTable = () => {
           </button>
         </div>
         {/* Heading */}
-        <div className="mb-6">
-          <h1 className="text-3xl font-bold text-gray-900">Products Table</h1>
-          <p className="text-gray-500 mt-1">Manage your products</p>
+        <div className="mb-6 flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">Products Table</h1>
+            <p className="text-gray-500 mt-1">Manage your products</p>
+          </div>
+
+          <div className="text-right">
+            <p className="font-semibold text-gray-800">{user?.name}</p>
+            <p className="text-sm text-gray-500">{user?.email}</p>
+          </div>
         </div>
 
         {/* Table Card */}
@@ -152,7 +159,7 @@ const ProductTable = () => {
                     <td className="px-6 py-4">
                       <div className="flex gap-2">
                         <button
-                         onClick={() => navigate("/product", { state: item })}
+                          onClick={() => navigate("/product", { state: item })}
                           className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition"
                         >
                           Edit

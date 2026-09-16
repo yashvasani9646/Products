@@ -16,7 +16,7 @@ const Login = () => {
     };
     console.log(userData);
 
-   fetch(`${import.meta.env.VITE_API_URL}/login`, {
+    fetch(`${import.meta.env.VITE_API_URL}/login`, {
       method: "POST",
       body: JSON.stringify(userData),
       headers: {
@@ -29,10 +29,11 @@ const Login = () => {
       .then((data) => {
         if (data.message) {
           localStorage.setItem("token", data.token);
+          localStorage.setItem("user", JSON.stringify(data.user));
           setErrors({});
           toast.success("Login Successful 🎉");
           setTimeout(() => {
-              navigate("/product");
+            navigate("/product");
           }, 1500);
         } else {
           setErrors(data.errors);
@@ -44,7 +45,9 @@ const Login = () => {
     <div className="min-h-screen flex justify-center items-center bg-gray-100 px-4">
       <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8">
         <div className="text-center mb-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Welcome Back</h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">
+            Welcome Back
+          </h2>
           <p className="text-gray-500">Login to your account</p>
         </div>
 
