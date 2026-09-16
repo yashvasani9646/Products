@@ -16,7 +16,7 @@ const Login = () => {
     };
     console.log(userData);
 
-   fetch(`${import.meta.env.VITE_API_URL}/register`, {
+   fetch(`${import.meta.env.VITE_API_URL}/login`, {
       method: "POST",
       body: JSON.stringify(userData),
       headers: {
@@ -32,7 +32,7 @@ const Login = () => {
           setErrors({});
           toast.success("Login Successful 🎉");
           setTimeout(() => {
-              navigate("/");
+              navigate("/product");
           }, 1500);
         } else {
           setErrors(data.errors);

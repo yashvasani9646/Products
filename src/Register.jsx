@@ -157,9 +157,7 @@ const Register = () => {
             />
 
             {errors.phoneNumber && (
-              <p className="text-red-500 text-sm mt-1">
-                {errors.phoneNumber}
-              </p>
+              <p className="text-red-500 text-sm mt-1">{errors.phoneNumber}</p>
             )}
           </div>
 

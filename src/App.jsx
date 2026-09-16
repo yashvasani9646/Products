@@ -12,7 +12,8 @@ function App() {
       <Routes>
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/" element={<Navigate to="/register"/>} />
+        <Route path="/" element={<Navigate to="/register" />} />
+        <Route path="/product" element={<Product />} />
         <Route path="/products" element={<ProductTable />} />
       </Routes>
 
