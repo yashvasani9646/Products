@@ -60,7 +60,7 @@ const ProductTable = () => {
       <div className="max-w-7xl mx-auto">
         <div className="mb-6">
           <button
-            onClick={() => navigate("/product", { state: item })}
+            onClick={() => navigate("/product")}
             className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white border border-gray-200 shadow-sm text-gray-700 font-medium hover:bg-gray-100 hover:shadow-md transition"
           >
             <IoArrowBackSharp size={20} />
@@ -152,7 +152,7 @@ const ProductTable = () => {
                     <td className="px-6 py-4">
                       <div className="flex gap-2">
                         <button
-                          onClick={() => navigate("/", { state: item })}
+                         onClick={() => navigate("/product", { state: item })}
                           className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition"
                         >
                           Edit
