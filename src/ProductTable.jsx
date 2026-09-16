@@ -60,7 +60,7 @@ const ProductTable = () => {
       <div className="max-w-7xl mx-auto">
         <div className="mb-6">
           <button
-            onClick={() => navigate("/")}
+            onClick={() => navigate("/product", { state: item })}
             className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white border border-gray-200 shadow-sm text-gray-700 font-medium hover:bg-gray-100 hover:shadow-md transition"
           >
             <IoArrowBackSharp size={20} />
