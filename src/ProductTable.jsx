@@ -11,7 +11,11 @@ const ProductTable = () => {
   const [products, setProducts] = useState([]);
 
   useEffect(() => {
-    fetch(`${API_URL}/products`)
+    fetch(`${API_URL}/products`, {
+      headers: {
+        Authorization: localStorage.getItem("token"),
+      },
+    })
       .then((res) => res.json())
       .then((data) => {
         setProducts(data);
@@ -31,6 +35,9 @@ const ProductTable = () => {
               toast.remove(t.id);
               fetch(`${API_URL}/products/${id}`, {
                 method: "DELETE",
+                headers: {
+                  Authorization: localStorage.getItem("token"),
+                },
               }).then(() => {
                 setProducts((oldData) =>
                   oldData.filter((item) => item.id !== id),
