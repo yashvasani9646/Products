@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { IoArrowBackSharp } from "react-icons/io5";
+
 const Login = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
@@ -44,6 +46,15 @@ const Login = () => {
   return (
     <div className="min-h-screen flex justify-center items-center bg-gray-100 px-4">
       <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8">
+        <div className="mb-6">
+          <button
+            onClick={() => navigate("/register")}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white border border-gray-200 shadow-sm text-gray-700 font-medium hover:bg-gray-100 hover:shadow-md transition"
+          >
+            <IoArrowBackSharp size={20} />
+            Back
+          </button>
+        </div>
         <div className="text-center mb-8">
           <h2 className="text-2xl font-bold text-gray-900 mb-2">
             Welcome Back
