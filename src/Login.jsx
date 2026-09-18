@@ -8,6 +8,7 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({});
+  const [showPassword, setShowPassword] = useState(false);
 
   const handelSubmit = (e) => {
     e.preventDefault();
@@ -98,7 +99,7 @@ const Login = () => {
             </label>
 
             <input
-              type="password"
+              type={showPassword ? "text" : "password"}
               className={`w-full px-4 py-3 rounded-lg border text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 transition ${
                 errors.password ? "border-red-500" : "border-gray-300"
               }`}
@@ -112,7 +113,13 @@ const Login = () => {
                 }));
               }}
             />
-
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-1/2 -translate-y-1/2"
+            >
+              {showPassword ? "🙈" : "👁️"}
+            </button>
             {errors.password && (
               <p className="text-red-500 text-sm mt-1">{errors.password}</p>
             )}
