@@ -18,6 +18,29 @@ const Register = () => {
     console.log(password);
     console.log(phoneNumber);
 
+    const errors = {};
+
+    if (!name) {
+      errors.name = "Name is required";
+    }
+
+    if (!email) {
+      errors.email = "Email is required";
+    }
+
+    if (!password) {
+      errors.password = "Password is required";
+    }
+
+    if (!phoneNumber) {
+      errors.phoneNumber = "Phone Number is required";
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setErrors(errors);
+      return;
+    }
+
     const userDate = {
       name: name,
       email: email,
@@ -48,6 +71,9 @@ const Register = () => {
           }, 1500);
         } else {
           setErrors(data.errors);
+        }
+        if (data.errors?.email === "Email Already Exist") {
+          toast.error("Email already exists!");
         }
       });
   };
@@ -112,29 +138,35 @@ const Register = () => {
             )}
           </div>
 
-          <div className="relative">
-            <input
-              type={showPassword ? "text" : "password"}
-              className="w-full px-4 py-3 pr-12 rounded-lg border border-gray-300"
-              placeholder="Enter your password"
-              value={password}
-              onChange={(e) => {
-                setPassword(e.target.value);
+          <div className="mb-4">
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                className="w-full px-4 py-3 pr-12 rounded-lg border border-gray-300"
+                placeholder="Enter your password"
+                value={password}
+                onChange={(e) => {
+                  setPassword(e.target.value);
 
-                setErrors((prev) => ({
-                  ...prev,
-                  password: "",
-                }));
-              }}
-            />
+                  setErrors((prev) => ({
+                    ...prev,
+                    password: "",
+                  }));
+                }}
+              />
 
-            <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2"
-            >
-              {showPassword ? "🙈" : "👁️"}
-            </button>
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2"
+              >
+                {showPassword ? "🙈" : "👁️"}
+              </button>
+            </div>
+
+            {errors.password && (
+              <p className="text-red-500 text-sm mt-1">{errors.password}</p>
+            )}
           </div>
 
           <div className="mb-6">
