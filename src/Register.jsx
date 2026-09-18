@@ -140,6 +140,9 @@ const Register = () => {
 
           <div className="mb-4">
             <div className="relative">
+              <label className="block text-sm font-semibold text-gray-700 mb-1.5">
+                Email Address
+              </label>
               <input
                 type={showPassword ? "text" : "password"}
                 className="w-full px-4 py-3 pr-12 rounded-lg border border-gray-300"
