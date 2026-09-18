@@ -7,6 +7,7 @@ const Register = () => {
   const [password, setPassword] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [errors, setErrors] = useState({});
+  const [showPassword, setShowPassword] = useState(false);
 
   const navigate = useNavigate();
   const handelSubmit = (e) => {
@@ -111,14 +112,10 @@ const Register = () => {
             )}
           </div>
 
-          <div className="mb-4">
-            <label className="block text-sm font-semibold text-gray-700 mb-1.5">
-              Password
-            </label>
-
+          <div className="relative">
             <input
-              type="password"
-              className="w-full px-4 py-3 rounded-lg border border-gray-300 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+              type={showPassword ? "text" : "password"}
+              className="w-full px-4 py-3 pr-12 rounded-lg border border-gray-300"
               placeholder="Enter your password"
               value={password}
               onChange={(e) => {
@@ -131,9 +128,13 @@ const Register = () => {
               }}
             />
 
-            {errors.password && (
-              <p className="text-red-500 text-sm mt-1">{errors.password}</p>
-            )}
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-1/2 -translate-y-1/2"
+            >
+              {showPassword ? "🙈" : "👁️"}
+            </button>
           </div>
 
           <div className="mb-6">
@@ -142,12 +143,14 @@ const Register = () => {
             </label>
 
             <input
-              type="number"
+              type="text"
               className="w-full px-4 py-3 rounded-lg border border-gray-300 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
               placeholder="Enter your phone number"
               value={phoneNumber}
               onChange={(e) => {
-                setPhoneNumber(e.target.value);
+                if (e.target.value.length <= 10) {
+                  setPhoneNumber(e.target.value);
+                }
 
                 setErrors((prev) => ({
                   ...prev,
