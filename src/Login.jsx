@@ -42,6 +42,11 @@ const Login = () => {
         }
       });
   };
+  if (data.errors?.email === "email does not exists") {
+    toast.error("email does not exists");
+  }
+
+
 
   return (
     <div className="min-h-screen flex justify-center items-center bg-gray-100 px-4">
