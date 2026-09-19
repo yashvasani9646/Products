@@ -183,8 +183,9 @@ const Register = () => {
               placeholder="Enter your phone number"
               value={phoneNumber}
               onChange={(e) => {
-                if (e.target.value.length <= 10) {
-                  setPhoneNumber(e.target.value);
+                const value = e.target.value.replace(/\D/g, "");
+                if (value.length <= 10) {
+                  setPhoneNumber(value);
                 }
 
                 setErrors((prev) => ({
