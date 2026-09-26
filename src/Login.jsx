@@ -1,7 +1,9 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { Eye, EyeOff } from "lucide-react";
 import { IoArrowBackSharp } from "react-icons/io5";
+import axios from "axios";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -13,21 +15,38 @@ const Login = () => {
   const handelSubmit = (e) => {
     e.preventDefault();
 
+    const errors = {};
+
+    if (!email.trim()) {
+      errors.email = "Email is required";
+    } else if (!email.includes("@")) {
+      errors.email = "Invalid email";
+    }
+
+    if (!password) {
+      errors.password = "Password is required";
+    } else if (password.length < 8) {
+      errors.password = "Password must be at least 8 characters";
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setErrors(errors);
+      return;
+    }
     const userData = {
       email: email,
       password: password,
     };
     console.log(userData);
 
-    fetch(`${import.meta.env.VITE_API_URL}/login`, {
-      method: "POST",
-      body: JSON.stringify(userData),
-      headers: {
-        "Content-type": "application/json",
-      },
-    })
+    axios
+      .post(`${import.meta.env.VITE_API_URL}/login`, userData, {
+        headers: {
+          "Content-type": "application/json",
+        },
+      })
       .then((response) => {
-        return response.json();
+        return response.data;
       })
       .then((data) => {
         if (data.message) {
@@ -36,13 +55,26 @@ const Login = () => {
           setErrors({});
           toast.success("Login Successful 🎉");
           setTimeout(() => {
-            navigate("/product");
+            navigate("/products");
           }, 1500);
         } else {
           setErrors(data.errors);
         }
         if (data.errors?.email === "Email does not exist") {
           toast.error("Email does not exist");
+        }
+      })
+      .catch((error) => {
+        const errors = error.response?.data?.errors;
+
+        setErrors(errors || {});
+
+        if (errors?.email === "Email does not exist") {
+          toast.error("Email does not exist");
+        }
+
+        if (errors?.password === "Invalid Password") {
+          toast.error("Invalid Password");
         }
       });
   };
@@ -98,28 +130,32 @@ const Login = () => {
               Password
             </label>
 
-            <input
-              type={showPassword ? "text" : "password"}
-              className={`w-full px-4 py-3 rounded-lg border text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 transition ${
-                errors.password ? "border-red-500" : "border-gray-300"
-              }`}
-              placeholder="Enter your password"
-              value={password}
-              onChange={(e) => {
-                setPassword(e.target.value);
-                setErrors((prev) => ({
-                  ...prev,
-                  password: "",
-                }));
-              }}
-            />
-            <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2"
-            >
-              {showPassword ? "🙈" : "👁️"}
-            </button>
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                className={`w-full px-4 py-3 pr-12 rounded-lg border text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 transition ${
+                  errors.password ? "border-red-500" : "border-gray-300"
+                }`}
+                placeholder="Enter your password"
+                value={password}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  setErrors((prev) => ({
+                    ...prev,
+                    password: "",
+                  }));
+                }}
+              />
+
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+              >
+                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              </button>
+            </div>
+
             {errors.password && (
               <p className="text-red-500 text-sm mt-1">{errors.password}</p>
             )}

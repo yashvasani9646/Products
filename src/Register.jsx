@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { Eye, EyeOff } from "lucide-react";
+import axios from "axios";
+
 const Register = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -20,26 +23,32 @@ const Register = () => {
 
     const errors = {};
 
-    if (!name) {
-      errors.name = "Name is required";
-    }
+if (!name.trim()) {
+  errors.name = "Name is required";
+}
 
-    if (!email) {
-      errors.email = "Email is required";
-    }
+if (!email.trim()) {
+  errors.email = "Email is required";
+} else if (!email.includes("@")) {
+  errors.email = "Invalid email";
+}
 
-    if (!password) {
-      errors.password = "Password is required";
-    }
+if (!password) {
+  errors.password = "Password is required";
+} else if (password.length < 8) {
+  errors.password = "Password must be at least 8 characters";
+}
 
-    if (!phoneNumber) {
-      errors.phoneNumber = "Phone Number is required";
-    }
+if (!phoneNumber) {
+  errors.phoneNumber = "Phone Number is required";
+} else if (phoneNumber.length !== 10) {
+  errors.phoneNumber = "Phone Number must be 10 digits";
+}
 
-    if (Object.keys(errors).length > 0) {
-      setErrors(errors);
-      return;
-    }
+if (Object.keys(errors).length > 0) {
+  setErrors(errors);
+  return;
+}
 
     const userDate = {
       name: name,
@@ -50,15 +59,14 @@ const Register = () => {
 
     console.log(userDate);
 
-    fetch(`${import.meta.env.VITE_API_URL}/register`, {
-      method: "POST",
-      body: JSON.stringify(userDate),
+    axios.post(`${import.meta.env.VITE_API_URL}/register`, userDate, {
       headers: {
         "Content-Type": "application/json",
       },
     })
+
       .then((response) => {
-        return response.json();
+        return response.data;
       })
       .then((data) => {
         if (data.message) {
@@ -139,10 +147,10 @@ const Register = () => {
           </div>
 
           <div className="mb-4">
+            <label className="block text-sm font-semibold text-gray-700 mb-1.5">
+              Password
+            </label>
             <div className="relative">
-              <label className="block text-sm font-semibold text-gray-700 mb-1.5">
-                Password
-              </label>
               <input
                 type={showPassword ? "text" : "password"}
                 className="w-full px-4 py-3 pr-12 rounded-lg border border-gray-300"
@@ -157,13 +165,12 @@ const Register = () => {
                   }));
                 }}
               />
-
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2"
+                className="absolute right-3 items-center top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
               >
-                {showPassword ? "🙈" : "👁️"}
+                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
               </button>
             </div>
 
