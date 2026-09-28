@@ -32,7 +32,8 @@ const CATEGORY_TONES = {
 const getCategoryTone = (category) =>
   CATEGORY_TONES[category] ?? "bg-slate-100 text-slate-600 ring-slate-500/20";
 
-const labelClass = "mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-400";
+const labelClass =
+  "mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-400";
 
 const fieldClass = (hasError) =>
   `w-full rounded-xl border bg-white py-2.5 pl-10 pr-3.5 text-sm text-slate-700 shadow-sm outline-none transition placeholder:text-slate-400 hover:border-slate-300 focus:ring-4 ${
@@ -143,7 +144,6 @@ const Product = () => {
           return response.data;
         })
 
-        
         .then((newProduct) => {
           setProduct("");
           setPrice("");
@@ -369,7 +369,9 @@ const Product = () => {
                       />
                     </div>
 
-                    {errors.category && <ErrorText>{errors.category}</ErrorText>}
+                    {errors.category && (
+                      <ErrorText>{errors.category}</ErrorText>
+                    )}
                   </div>
 
                   <div>
@@ -380,9 +382,11 @@ const Product = () => {
                         <label
                           key={option}
                           className={`group relative flex cursor-pointer items-center gap-2.5 rounded-xl border px-3.5 py-2.5 transition ${
-                            type === option
-                              ? "border-blue-500 bg-blue-50/60 ring-4 ring-blue-100"
-                              : "border-slate-200 bg-white hover:border-slate-300"
+                            errors.type
+                              ? "border-red-300 bg-red-50/60"
+                              : type === option
+                                ? "border-blue-500 bg-blue-50/60 ring-4 ring-blue-100"
+                                : "border-slate-200 bg-white hover:border-slate-300"
                           }`}
                         >
                           <input

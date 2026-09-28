@@ -23,32 +23,32 @@ const Register = () => {
 
     const errors = {};
 
-if (!name.trim()) {
-  errors.name = "Name is required";
-}
+    if (!name.trim()) {
+      errors.name = "Name is required";
+    }
 
-if (!email.trim()) {
-  errors.email = "Email is required";
-} else if (!email.includes("@")) {
-  errors.email = "Invalid email";
-}
+    if (!email.trim()) {
+      errors.email = "Email is required";
+    } else if (!email.includes("@")) {
+      errors.email = "Invalid email";
+    }
 
-if (!password) {
-  errors.password = "Password is required";
-} else if (password.length < 8) {
-  errors.password = "Password must be at least 8 characters";
-}
+    if (!password) {
+      errors.password = "Password is required";
+    } else if (password.length < 8) {
+      errors.password = "Password must be at least 8 characters";
+    }
 
-if (!phoneNumber) {
-  errors.phoneNumber = "Phone Number is required";
-} else if (phoneNumber.length !== 10) {
-  errors.phoneNumber = "Phone Number must be 10 digits";
-}
+    if (!phoneNumber) {
+      errors.phoneNumber = "Phone Number is required";
+    } else if (phoneNumber.length !== 10) {
+      errors.phoneNumber = "Phone Number must be 10 digits";
+    }
 
-if (Object.keys(errors).length > 0) {
-  setErrors(errors);
-  return;
-}
+    if (Object.keys(errors).length > 0) {
+      setErrors(errors);
+      return;
+    }
 
     const userDate = {
       name: name,
@@ -59,16 +59,35 @@ if (Object.keys(errors).length > 0) {
 
     console.log(userDate);
 
-    axios.post(`${import.meta.env.VITE_API_URL}/register`, userDate, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-
+    axios
+      .get(`${import.meta.env.VITE_API_URL}/check-email?email=${email}`)
       .then((response) => {
-        return response.data;
+        if (response.data.exists) {
+          setErrors({
+            email: "Email already exists",
+          });
+
+          toast.error("Email already exists!");
+
+          return;
+        }
+
+        // Email nahi hai → ab register API call hogi
+        return axios.post(
+          `${import.meta.env.VITE_API_URL}/register`,
+          userDate,
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          },
+        );
       })
-      .then((data) => {
+      .then((response) => {
+        if (!response) return;
+
+        const data = response.data;
+
         if (data.message) {
           setErrors({});
 
@@ -77,11 +96,6 @@ if (Object.keys(errors).length > 0) {
           setTimeout(() => {
             navigate("/login");
           }, 1500);
-        } else {
-          setErrors(data.errors);
-        }
-        if (data.errors?.email === "Email Already Exist") {
-          toast.error("Email already exists!");
         }
       });
   };
