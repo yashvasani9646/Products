@@ -58,6 +58,7 @@ const Product = () => {
   const [editId, setEditId] = useState(null);
   const [errors, setErrors] = useState({});
   const [category, setCategory] = useState("");
+  const [categories, setCategories] = useState([]);
   const [type, setType] = useState("");
   const [available, setAvailable] = useState(false);
   const [image, setImage] = useState(null);
@@ -184,6 +185,16 @@ const Product = () => {
   };
 
   const isEditing = editId !== null;
+  useEffect(() => {
+    axios
+      .get(`${API_URL}/public/categories`)
+      .then((res) => {
+        setCategories(res.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
 
   return (
     <div className="min-h-screen bg-slate-100 px-4 py-6 sm:px-6 lg:px-8">
@@ -353,14 +364,11 @@ const Product = () => {
                         className={`${fieldClass(errors.category)} cursor-pointer appearance-none pr-10`}
                       >
                         <option value="">Select Category</option>
-                        <option value="Electronics">Electronics</option>
-                        <option value="Clothing">Clothing</option>
-                        <option value="Food">Food</option>
-                        <option value="Furniture">Furniture</option>
-                        <option value="Books">Books</option>
-                        <option value="Beauty">Beauty</option>
-                        <option value="Sports">Sports</option>
-                        <option value="Other">Other</option>
+                        {categories.map((item) => (
+                          <option key={item.id} value={item.category}>
+                            {item.category}
+                          </option>
+                        ))}
                       </select>
 
                       <ChevronDown
