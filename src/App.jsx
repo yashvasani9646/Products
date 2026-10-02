@@ -48,14 +48,14 @@ function DashboardLayout() {
 }
 
 function Layout() {
-  return (
+  return ( 
     <>
       <Routes>
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
         <Route path="/" element={<Navigate to="/register" />} />
 
-        <Route element={<RequireAuth />}>
+        <Route element={<RequireAuth />}> 
           <Route element={<DashboardLayout />}>
             <Route path="/products" element={<ProductTable />} />
             <Route path="/product" element={<Product />} />
