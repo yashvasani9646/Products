@@ -53,12 +53,14 @@ const Product = () => {
   const API_URL = import.meta.env.VITE_API_URL;
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem("user"));
+
   const [Product, setProduct] = useState("");
   const [Price, setPrice] = useState("");
   const [editId, setEditId] = useState(null);
   const [errors, setErrors] = useState({});
   const [category, setCategory] = useState("");
   const [categories, setCategories] = useState([]);
+  const [subcategory, setSubcategory] = useState("");
   const [type, setType] = useState("");
   const [available, setAvailable] = useState(false);
   const [image, setImage] = useState(null);
@@ -69,6 +71,7 @@ const Product = () => {
     e.preventDefault();
 
     let newErrors = {};
+
     if (!Product) {
       newErrors.Product = "Product name is required";
     }
@@ -76,6 +79,7 @@ const Product = () => {
     if (!Price) {
       newErrors.Price = "Price is required";
     }
+
     if (!category) {
       newErrors.category = "Category is required";
     }
@@ -84,26 +88,34 @@ const Product = () => {
       newErrors.type = "Product type is required";
     }
 
+    if (!subcategory) {
+      newErrors.subcategory = "Subcategory is required";
+    }
+
     if (!image && editId === null) {
       newErrors.image = "Image is required";
     }
+
     setErrors(newErrors);
 
     if (Object.keys(newErrors).length > 0) {
       return;
     }
+
     if (editId !== null) {
       const formData = new FormData();
 
       formData.append("product", Product);
       formData.append("price", Price);
       formData.append("category", category);
+      formData.append("subcategory", subcategory);
       formData.append("type", type);
       formData.append("available", available);
 
       if (image) {
         formData.append("image", image);
       }
+
       axios
         .put(`${API_URL}/products/${editId}`, formData, {
           headers: {
@@ -112,27 +124,34 @@ const Product = () => {
         })
         .then(() => {
           navigate("/products");
+
           setEditId(null);
           setProduct("");
-
           setPrice("");
           setCategory("");
+          setSubcategory("");
           setType("");
           setAvailable(false);
-          setImage("");
+          setImage(null);
+          setImagePreview(null);
+          setErrors({});
 
           toast.success("Product updated successfully!");
+        })
+        .catch((error) => {
+          toast.error(error.response?.data?.error || error.message, {
+            id: "product-error",
+          });
         });
     } else {
       const formData = new FormData();
-      formData.append("product", Product);
 
+      formData.append("product", Product);
       formData.append("price", Price);
       formData.append("category", category);
-
+      formData.append("subcategory", subcategory);
       formData.append("type", type);
       formData.append("available", available);
-
       formData.append("image", image);
 
       axios
@@ -144,21 +163,29 @@ const Product = () => {
         .then((response) => {
           return response.data;
         })
-
-        .then((newProduct) => {
+        .then(() => {
           setProduct("");
           setPrice("");
+          setCategory("");
+          setSubcategory("");
+          setType("");
+          setAvailable(false);
+          setImage(null);
+          setImagePreview(null);
+          setErrors({});
 
           toast.success("Product added successfully! 🛒");
           navigate("/products");
         })
         .catch((error) => {
-          toast.error(error.message, {
+          toast.error(error.response?.data?.error || error.message, {
             id: "product-error",
           });
         });
     }
   };
+
+  // ==================== EDIT PRODUCT ====================
 
   useEffect(() => {
     if (location.state) {
@@ -166,16 +193,20 @@ const Product = () => {
       setProduct(location.state.product);
       setPrice(location.state.price);
       setCategory(location.state.category);
+      setSubcategory(location.state.subcategory);
       setType(location.state.type);
       setAvailable(location.state.available);
     }
   }, [location.state]);
+
+  // ==================== CANCEL EDIT ====================
 
   const handleCancelEdit = () => {
     setEditId(null);
     setProduct("");
     setPrice("");
     setCategory("");
+    setSubcategory("");
     setType("");
     setAvailable(false);
     setImage(null);
@@ -185,6 +216,9 @@ const Product = () => {
   };
 
   const isEditing = editId !== null;
+
+  // ==================== GET CATEGORIES ====================
+
   useEffect(() => {
     axios
       .get(`${API_URL}/public/categories`)
@@ -282,6 +316,8 @@ const Product = () => {
 
               <form onSubmit={handelChange} className="p-5">
                 <div className="grid gap-5 md:grid-cols-2">
+                  {/* PRODUCT NAME */}
+
                   <div>
                     <label className={labelClass}>Product name</label>
 
@@ -296,6 +332,7 @@ const Product = () => {
                         value={Product}
                         onChange={(e) => {
                           setProduct(e.target.value);
+
                           if (e.target.value) {
                             setErrors((oldErrors) => ({
                               ...oldErrors,
@@ -311,6 +348,8 @@ const Product = () => {
                     {errors.Product && <ErrorText>{errors.Product}</ErrorText>}
                   </div>
 
+                  {/* PRICE */}
+
                   <div>
                     <label className={labelClass}>Price</label>
 
@@ -325,6 +364,7 @@ const Product = () => {
                         value={Price}
                         onChange={(e) => {
                           setPrice(e.target.value);
+
                           if (e.target.value) {
                             setErrors((oldErrors) => ({
                               ...oldErrors,
@@ -340,6 +380,8 @@ const Product = () => {
                     {errors.Price && <ErrorText>{errors.Price}</ErrorText>}
                   </div>
 
+                  {/* CATEGORY */}
+
                   <div>
                     <label className={labelClass}>Category</label>
 
@@ -353,17 +395,22 @@ const Product = () => {
                         value={category}
                         onChange={(e) => {
                           setCategory(e.target.value);
+                          setSubcategory("");
 
                           if (e.target.value) {
                             setErrors((oldErrors) => ({
                               ...oldErrors,
                               category: "",
+                              subcategory: "",
                             }));
                           }
                         }}
-                        className={`${fieldClass(errors.category)} cursor-pointer appearance-none pr-10`}
+                        className={`${fieldClass(
+                          errors.category,
+                        )} cursor-pointer appearance-none pr-10`}
                       >
                         <option value="">Select Category</option>
+
                         {categories.map((item) => (
                           <option key={item.id} value={item.category}>
                             {item.category}
@@ -381,6 +428,64 @@ const Product = () => {
                       <ErrorText>{errors.category}</ErrorText>
                     )}
                   </div>
+
+                  {/* SUBCATEGORY */}
+
+                  <div>
+                    <label className={labelClass}>Subcategory</label>
+
+                    <div className="relative">
+                      <Tags
+                        size={18}
+                        className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"
+                      />
+
+                      <select
+                        value={subcategory}
+                        onChange={(e) => {
+                          setSubcategory(e.target.value);
+
+                          if (e.target.value) {
+                            setErrors((oldErrors) => ({
+                              ...oldErrors,
+                              subcategory: "",
+                            }));
+                          }
+                        }}
+                        disabled={!category}
+                        className={`w-full rounded-xl border bg-white py-2.5 pl-10 pr-10 text-sm text-slate-700 shadow-sm outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-100 disabled:cursor-not-allowed disabled:bg-slate-100 ${
+                          errors.subcategory
+                            ? "border-red-300"
+                            : "border-slate-200"
+                        }`}
+                      >
+                        <option value="">
+                          {category
+                            ? "Select Subcategory"
+                            : "Select Category First"}
+                        </option>
+
+                        {categories
+                          .find((item) => item.category === category)
+                          ?.subcategories?.map((item, index) => (
+                            <option key={index} value={item}>
+                              {item}
+                            </option>
+                          ))}
+                      </select>
+
+                      <ChevronDown
+                        size={16}
+                        className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400"
+                      />
+                    </div>
+
+                    {errors.subcategory && (
+                      <ErrorText>{errors.subcategory}</ErrorText>
+                    )}
+                  </div>
+
+                  {/* PRODUCT TYPE */}
 
                   <div>
                     <label className={labelClass}>Product type</label>
@@ -404,6 +509,7 @@ const Product = () => {
                             checked={type === option}
                             onChange={(e) => {
                               setType(e.target.value);
+
                               setErrors((oldErrors) => ({
                                 ...oldErrors,
                                 type: "",
@@ -438,6 +544,8 @@ const Product = () => {
                     {errors.type && <ErrorText>{errors.type}</ErrorText>}
                   </div>
 
+                  {/* AVAILABILITY */}
+
                   <div>
                     <label className={labelClass}>Availability</label>
 
@@ -462,11 +570,14 @@ const Product = () => {
                             onChange={(e) => setAvailable(e.target.checked)}
                             className="peer sr-only"
                           />
+
                           <div className="h-6 w-11 rounded-full bg-slate-200 transition peer-focus:ring-4 peer-focus:ring-blue-100 peer-checked:bg-blue-600 peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
                         </div>
                       </label>
                     </div>
                   </div>
+
+                  {/* IMAGE */}
 
                   <div>
                     <label className={labelClass}>Product image</label>
@@ -484,9 +595,12 @@ const Product = () => {
                         accept="image/*"
                         onChange={(e) => {
                           const file = e.target.files[0];
+
                           setImage(file);
+
                           if (file) {
                             setImagePreview(URL.createObjectURL(file));
+
                             setErrors((oldErrors) => ({
                               ...oldErrors,
                               image: "",
@@ -539,16 +653,9 @@ const Product = () => {
                     className="inline-flex flex-1 items-center justify-center gap-2 rounded-xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white shadow-sm shadow-blue-600/20 transition hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-100 active:scale-[0.99]"
                   >
                     {isEditing ? <SquarePen size={18} /> : <Plus size={18} />}
+
                     {isEditing ? "Update Product" : "Add Product"}
                   </button>
-
-                  {/* <button
-                    type="button"
-                    onClick={() => navigate("/products")}
-                    className="flex-1 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-700 hover:via-indigo-700 hover:to-purple-700 text-white font-bold py-4 rounded-2xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
-                  >
-                    All Product History
-                  </button> */}
 
                   {isEditing && (
                     <button
@@ -563,6 +670,8 @@ const Product = () => {
               </form>
             </div>
           </div>
+
+          {/* LIVE PREVIEW */}
 
           <div className="space-y-6">
             <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
@@ -606,13 +715,21 @@ const Product = () => {
                 <div className="mt-3 flex flex-wrap gap-2">
                   {category ? (
                     <span
-                      className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium ring-1 ring-inset ${getCategoryTone(category)}`}
+                      className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium ring-1 ring-inset ${getCategoryTone(
+                        category,
+                      )}`}
                     >
                       {category}
                     </span>
                   ) : (
                     <span className="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-400 ring-1 ring-inset ring-slate-500/20">
                       No category
+                    </span>
+                  )}
+
+                  {subcategory && (
+                    <span className="inline-flex items-center rounded-full bg-purple-50 px-2.5 py-1 text-xs font-medium text-purple-700 ring-1 ring-inset ring-purple-600/20">
+                      {subcategory}
                     </span>
                   )}
 
@@ -634,6 +751,7 @@ const Product = () => {
                         available ? "bg-emerald-500" : "bg-rose-500"
                       }`}
                     />
+
                     {available ? "Available" : "Not Available"}
                   </span>
                 </div>

@@ -35,6 +35,7 @@ const Category = () => {
   const location = useLocation();
 
   const [category, setCategory] = useState("");
+  const [subcategory, setSubcategory] = useState("");
   const [available, setAvailable] = useState(false);
   const [image, setImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
@@ -121,6 +122,37 @@ const Category = () => {
       });
   };
 
+  const handleAddSubcategory = () => {
+    if (!editId) {
+      toast.error("Please create the category first");
+      return;
+    }
+
+    if (!subcategory.trim()) {
+      toast.error("Subcategory name is required");
+      return;
+    }
+
+    axios
+      .post(
+        `${API_URL}/categories/${editId}/subcategories`,
+        {
+          subcategory: subcategory.trim(),
+        },
+        {
+          headers: {
+            Authorization: localStorage.getItem("token"),
+          },
+        },
+      )
+      .then(() => {
+        toast.success("Subcategory added successfully!");
+        setSubcategory("");
+      })
+      .catch((error) => {
+        toast.error(error.response?.data?.error || "Something went wrong");
+      });
+  };
   const handleCancelEdit = () => {
     setEditId(null);
     setCategory("");
@@ -314,7 +346,27 @@ const Category = () => {
                 {errors.image && <ErrorText>{errors.image}</ErrorText>}
               </div>
             </div>
+            <div className="md:col-span-2">
+              <label className={labelClass}>Subcategory</label>
 
+              <div className="flex gap-3">
+                <input
+                  type="text"
+                  placeholder="Enter subcategory name"
+                  value={subcategory}
+                  onChange={(e) => setSubcategory(e.target.value)}
+                  className={fieldClass(false)}
+                />
+
+                <button
+                  type="button"
+                  onClick={handleAddSubcategory}
+                  className="shrink-0 rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-blue-700"
+                >
+                  Add Subcategory
+                </button>
+              </div>
+            </div>
             <div className="mt-6 flex flex-col gap-3 border-t border-slate-200 pt-5 sm:flex-row">
               <button
                 type="submit"
