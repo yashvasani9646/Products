@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Package, FolderTree, X } from "lucide-react";
+import { Package, FolderTree, X, MessageCircleQuestion } from "lucide-react";
 
 const menuItems = [
   {
@@ -15,6 +15,18 @@ const menuItems = [
     icon: Package,
     match: ["/products", "/product"],
   },
+  {
+    label: "Blogs",
+    path: "/blogs",
+    icon: Package,
+    match: ["/blogs", "/blog"],
+  },
+  {
+  label: "FAQs",
+  path: "/faqs",
+  icon: MessageCircleQuestion,
+  match: ["/faqs"],
+},
 ];
 
 const Sidebar = ({ isOpen, onClose }) => {

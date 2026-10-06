@@ -17,7 +17,10 @@ import Login from "./Login";
 import Header from "./Header";
 import Sidebar from "./Sidebar";
 import Category from "./Category";
+import Blog from "./Blog";
 import CategoryTable from "./CategoryTable";
+import Faq2 from "./Faq2";
+
 function RequireAuth() {
   return localStorage.getItem("token") ? (
     <Outlet />
@@ -48,19 +51,23 @@ function DashboardLayout() {
 }
 
 function Layout() {
-  return ( 
+  return (
     <>
       <Routes>
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
         <Route path="/" element={<Navigate to="/register" />} />
 
-        <Route element={<RequireAuth />}> 
+        <Route element={<RequireAuth />}>
           <Route element={<DashboardLayout />}>
             <Route path="/products" element={<ProductTable />} />
             <Route path="/product" element={<Product />} />
+
             <Route path="/categories" element={<CategoryTable />} />
             <Route path="/category" element={<Category />} />
+
+            <Route path="/blogs" element={<Blog />} />
+            <Route path="/faqs" element={<Faq2 />} />
           </Route>
         </Route>
       </Routes>
