@@ -48,7 +48,7 @@ const Register = () => {
 
       errors.email = "Email is required";
 
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+   } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
 
       errors.email = "Enter a valid email address";
 
