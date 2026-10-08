@@ -125,6 +125,7 @@ const Faq2 = () => {
               <p className="text-sm font-semibold text-slate-800">
                 {user?.name}
               </p>
+
               <p className="text-xs text-slate-500">{user?.email}</p>
             </div>
 
@@ -139,6 +140,7 @@ const Faq2 = () => {
               className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-600 shadow-sm transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
             >
               <ArrowLeft size={16} />
+
               <span className="hidden sm:inline">Back</span>
             </button>
           </div>
@@ -232,7 +234,9 @@ const Faq2 = () => {
                       />
                     </div>
 
-                    {errors.answer && <ErrorText>{errors.answer}</ErrorText>}
+                    {errors.answer && (
+                      <ErrorText>{errors.answer}</ErrorText>
+                    )}
                   </div>
                 </div>
 
@@ -321,6 +325,7 @@ const Faq2 = () => {
                     size={16}
                     className="mt-0.5 shrink-0 text-blue-500"
                   />
+
                   Keep questions short and easy to scan for customers.
                 </li>
 
@@ -329,6 +334,7 @@ const Faq2 = () => {
                     size={16}
                     className="mt-0.5 shrink-0 text-blue-500"
                   />
+
                   Write answers in plain language and keep them concise.
                 </li>
 
@@ -337,6 +343,7 @@ const Faq2 = () => {
                     size={16}
                     className="mt-0.5 shrink-0 text-blue-500"
                   />
+
                   Both question and answer are required before publishing.
                 </li>
               </ul>

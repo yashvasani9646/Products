@@ -380,7 +380,7 @@ const Blog = () => {
 
                   <div className="h-48 w-full overflow-hidden bg-gray-100">
                     <img
-                      src={`${API_URL}/uploads/${blog.image}`}
+                      src={blog.image}
                       alt={blog.title}
                       className="h-full w-full object-cover"
                     />

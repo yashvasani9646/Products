@@ -51,7 +51,7 @@ const Category = () => {
       setAvailable(location.state.available);
       setImagePreview(
         location.state.image
-          ? `${API_URL}/uploads/${location.state.image}`
+          ?location.state.image
           : null,
       );
     }

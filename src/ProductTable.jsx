@@ -501,7 +501,7 @@ const ProductTable = () => {
                         {item.image ? (
                           <div className="relative h-12 w-12 overflow-hidden rounded-xl border border-slate-200 bg-slate-50">
                             <img
-                              src={`${API_URL}/uploads/${item.image}`}
+                              src={item.image}
                               alt={item.product}
                               loading="lazy"
                               className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
