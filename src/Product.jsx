@@ -62,6 +62,12 @@ const Product = () => {
   const [categories, setCategories] = useState([]);
   const [subcategory, setSubcategory] = useState("");
   const [type, setType] = useState("");
+  const [description, setDescription] = useState("");
+  const [designMotif, setDesignMotif] = useState("");
+  const [centerpieceStone, setCenterpieceStone] = useState("");
+  const [earringStyle, setEarringStyle] = useState("");
+  const [embellishments, setEmbellishments] = useState("");
+  const [finish, setFinish] = useState("");
   const [available, setAvailable] = useState(false);
   const [image, setImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
@@ -88,6 +94,10 @@ const Product = () => {
       newErrors.type = "Product type is required";
     }
 
+    if (!description.trim()) {
+      newErrors.description = "Product description is required";
+    }
+
     if (!subcategory) {
       newErrors.subcategory = "Subcategory is required";
     }
@@ -110,6 +120,12 @@ const Product = () => {
       formData.append("category", category);
       formData.append("subcategory", subcategory);
       formData.append("type", type);
+      formData.append("description", description);
+      formData.append("designMotif", designMotif);
+      formData.append("centerpieceStone", centerpieceStone);
+      formData.append("earringStyle", earringStyle);
+      formData.append("embellishments", embellishments);
+      formData.append("finish", finish);
       formData.append("available", available);
 
       if (image) {
@@ -131,6 +147,12 @@ const Product = () => {
           setCategory("");
           setSubcategory("");
           setType("");
+          setDescription("");
+          setDesignMotif("");
+          setCenterpieceStone("");
+          setEarringStyle("");
+          setEmbellishments("");
+          setFinish("");
           setAvailable(false);
           setImage(null);
           setImagePreview(null);
@@ -151,6 +173,12 @@ const Product = () => {
       formData.append("category", category);
       formData.append("subcategory", subcategory);
       formData.append("type", type);
+      formData.append("description", description);
+      formData.append("designMotif", designMotif);
+      formData.append("centerpieceStone", centerpieceStone);
+      formData.append("earringStyle", earringStyle);
+      formData.append("embellishments", embellishments);
+      formData.append("finish", finish);
       formData.append("available", available);
       formData.append("image", image);
 
@@ -169,6 +197,12 @@ const Product = () => {
           setCategory("");
           setSubcategory("");
           setType("");
+          setDescription("");
+          setDesignMotif("");
+          setCenterpieceStone("");
+          setEarringStyle("");
+          setEmbellishments("");
+          setFinish("");
           setAvailable(false);
           setImage(null);
           setImagePreview(null);
@@ -195,6 +229,12 @@ const Product = () => {
       setCategory(location.state.category);
       setSubcategory(location.state.subcategory);
       setType(location.state.type);
+      setDescription(location.state.description || "");
+      setDesignMotif(location.state.designMotif || "");
+      setCenterpieceStone(location.state.centerpieceStone || "");
+      setEarringStyle(location.state.earringStyle || "");
+      setEmbellishments(location.state.embellishments || "");
+      setFinish(location.state.finish || "");
       setAvailable(location.state.available);
     }
   }, [location.state]);
@@ -208,6 +248,12 @@ const Product = () => {
     setCategory("");
     setSubcategory("");
     setType("");
+    setDescription("");
+    setDesignMotif("");
+    setCenterpieceStone("");
+    setEarringStyle("");
+    setEmbellishments("");
+    setFinish("");
     setAvailable(false);
     setImage(null);
     setImagePreview(null);
@@ -544,6 +590,103 @@ const Product = () => {
                     {errors.type && <ErrorText>{errors.type}</ErrorText>}
                   </div>
 
+                  {/* PRODUCT DESCRIPTION */}
+
+                  <div className="md:col-span-2">
+                    <label className={labelClass}>Product description *</label>
+                    <textarea
+                      value={description}
+                      onChange={(e) => {
+                        setDescription(e.target.value);
+
+                        if (e.target.value.trim()) {
+                          setErrors((oldErrors) => ({
+                            ...oldErrors,
+                            description: "",
+                          }));
+                        }
+                      }}
+                      placeholder="Enter product description"
+                      rows={4}
+                      className={`w-full rounded-xl border bg-white px-3.5 py-3 text-sm text-slate-700 shadow-sm outline-none transition placeholder:text-slate-400 hover:border-slate-300 focus:ring-4 ${
+                        errors.description
+                          ? "border-red-300 focus:border-red-500 focus:ring-red-100"
+                          : "border-slate-200 focus:border-blue-500 focus:ring-blue-100"
+                      }`}
+                    />
+                    {errors.description && (
+                      <ErrorText>{errors.description}</ErrorText>
+                    )}
+                  </div>
+
+                  {/* PRODUCT DETAILS FIELDS */}
+
+                  <div className="md:col-span-2 rounded-xl border border-slate-200 bg-slate-50/70 p-4">
+                    <h3 className="mb-1 text-sm font-semibold text-slate-800">
+                      Product Details (optional)
+                    </h3>
+                    <p className="mb-4 text-xs text-slate-500">
+                      Fill in the details you want to display in the Buyer Product Details tab.
+                    </p>
+
+                    <div className="grid gap-4 md:grid-cols-2">
+                      <div>
+                        <label className={labelClass}>Design Motif</label>
+                        <input
+                          type="text"
+                          value={designMotif}
+                          onChange={(e) => setDesignMotif(e.target.value)}
+                          placeholder="Describe the design or pattern"
+                          className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
+                        />
+                      </div>
+
+                      <div>
+                        <label className={labelClass}>Centerpiece Stone</label>
+                        <input
+                          type="text"
+                          value={centerpieceStone}
+                          onChange={(e) => setCenterpieceStone(e.target.value)}
+                          placeholder="Describe the stone or main feature"
+                          className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
+                        />
+                      </div>
+
+                      <div>
+                        <label className={labelClass}>Earring Style</label>
+                        <input
+                          type="text"
+                          value={earringStyle}
+                          onChange={(e) => setEarringStyle(e.target.value)}
+                          placeholder="Enter the product style"
+                          className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
+                        />
+                      </div>
+
+                      <div>
+                        <label className={labelClass}>Embellishments</label>
+                        <input
+                          type="text"
+                          value={embellishments}
+                          onChange={(e) => setEmbellishments(e.target.value)}
+                          placeholder="Describe decorative details"
+                          className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
+                        />
+                      </div>
+
+                      <div className="md:col-span-2">
+                        <label className={labelClass}>Finish</label>
+                        <input
+                          type="text"
+                          value={finish}
+                          onChange={(e) => setFinish(e.target.value)}
+                          placeholder="Describe the product finish"
+                          className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
                   {/* AVAILABILITY */}
 
                   <div>
@@ -707,6 +850,10 @@ const Product = () => {
                 <h3 className="mt-4 truncate text-base font-semibold text-slate-900">
                   {Product || "Product name"}
                 </h3>
+
+                <p className="mt-2 line-clamp-3 text-sm text-slate-500">
+                  {description || "Product description"}
+                </p>
 
                 <p className="mt-1 text-lg font-bold text-slate-900 tabular-nums">
                   ₹{Price || "0"}

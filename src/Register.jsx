@@ -98,7 +98,7 @@ const Register = () => {
 
     axios
 
-      .post(`${import.meta.env.VITE_API_URL}/register`, userDate, {
+        .post(`${import.meta.env.VITE_API_URL.replace(/\/+$/, "")}/register`, userDate, {
 
         headers: {
 
