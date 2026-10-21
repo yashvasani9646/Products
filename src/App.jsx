@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Product from "./Product";
 import ProductTable from "./ProductTable";
+
 import {
   BrowserRouter,
   Routes,
@@ -20,6 +21,9 @@ import Category from "./Category";
 import Blog from "./Blog";
 import CategoryTable from "./CategoryTable";
 import Faq2 from "./Faq2";
+
+// ✅ Users component
+import Users from "./Users";
 
 function RequireAuth() {
   return localStorage.getItem("token") ? (
@@ -56,7 +60,8 @@ function Layout() {
       <Routes>
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/" element={<Navigate to="/register" />} />
+
+        <Route path="/" element={<Navigate to="/register" replace />} />
 
         <Route element={<RequireAuth />}>
           <Route element={<DashboardLayout />}>
@@ -68,6 +73,9 @@ function Layout() {
 
             <Route path="/blogs" element={<Blog />} />
             <Route path="/faqs" element={<Faq2 />} />
+
+            {/* ✅ Registered Users Page */}
+            <Route path="/users" element={<Users />} />
           </Route>
         </Route>
       </Routes>
