@@ -20,6 +20,8 @@ import Sidebar from "./Sidebar";
 import Category from "./Category";
 import Blog from "./Blog";
 import CategoryTable from "./CategoryTable";
+import Subcategory from "./Subcategory";
+import SubcategoryTable from "./SubcategoryTable";
 import Faq2 from "./Faq2";
 
 // ✅ Users component
@@ -70,6 +72,9 @@ function Layout() {
 
             <Route path="/categories" element={<CategoryTable />} />
             <Route path="/category" element={<Category />} />
+
+            <Route path="/subcategories" element={<SubcategoryTable />} />
+            <Route path="/subcategory" element={<Subcategory />} />
 
             <Route path="/blogs" element={<Blog />} />
             <Route path="/faqs" element={<Faq2 />} />

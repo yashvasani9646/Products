@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import {
   Package,
   FolderTree,
+  Layers,
   X,
   MessageCircleQuestion,
   Users as UsersIcon,
@@ -14,6 +15,12 @@ const menuItems = [
     path: "/categories",
     icon: FolderTree,
     match: ["/categories", "/category"],
+  },
+  {
+    label: "Subcategories",
+    path: "/subcategories",
+    icon: Layers,
+    match: ["/subcategories", "/subcategory"],
   },
   {
     label: "Products",

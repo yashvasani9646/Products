@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
@@ -49,6 +49,24 @@ const ErrorText = ({ children }) => (
   </p>
 );
 
+// Subcategories are stored either as plain strings (legacy categories) or as
+// objects with a name, image and availability flag. Both shapes are read so
+// the dropdown always works with the data that is actually in the database.
+const normalizeSubcategories = (entries) =>
+  (entries || [])
+    .map((entry) =>
+      typeof entry === "string" ? entry : entry?.subcategory || "",
+    )
+    .filter((entry) => entry);
+
+// A category from the backend, ready for the category and subcategory
+// dropdowns of the product form.
+const normalizeCategory = (entry) => ({
+  id: entry?.id,
+  category: entry?.category || "",
+  subcategories: normalizeSubcategories(entry?.subcategories),
+});
+
 const Product = () => {
   const API_URL = import.meta.env.VITE_API_URL;
   const navigate = useNavigate();
@@ -72,6 +90,40 @@ const Product = () => {
   const [image, setImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const location = useLocation();
+
+  // The categories of the admin panel together with their subcategories.
+  // They are the single source for both dropdowns of the form.
+  const categoryOptions = useMemo(() => {
+    // A category that was saved on the product but is not part of the list
+    // anymore is kept visible, so editing a product never drops its data.
+    if (!category || categories.some((item) => item.category === category)) {
+      return categories;
+    }
+
+    return [
+      ...categories,
+      {
+        id: `saved-${category}`,
+        category,
+        subcategories: subcategory ? [subcategory] : [],
+      },
+    ];
+  }, [categories, category, subcategory]);
+
+  const selectedCategory = categoryOptions.find(
+    (item) => item.category === category,
+  );
+
+  const subcategoryOptions = useMemo(() => {
+    const options = selectedCategory?.subcategories || [];
+
+    // Same as above, the saved subcategory stays selectable.
+    if (!subcategory || options.includes(subcategory)) {
+      return options;
+    }
+
+    return [...options, subcategory];
+  }, [selectedCategory, subcategory]);
 
   const handelChange = (e) => {
     e.preventDefault();
@@ -100,6 +152,12 @@ const Product = () => {
 
     if (!subcategory) {
       newErrors.subcategory = "Subcategory is required";
+    } else if (
+      selectedCategory &&
+      !selectedCategory.subcategories.includes(subcategory)
+    ) {
+      newErrors.subcategory =
+        "Selected subcategory does not belong to the selected category";
     }
 
     if (!image && editId === null) {
@@ -226,8 +284,8 @@ const Product = () => {
       setEditId(location.state.id);
       setProduct(location.state.product);
       setPrice(location.state.price);
-      setCategory(location.state.category);
-      setSubcategory(location.state.subcategory);
+      setCategory(location.state.category || "");
+      setSubcategory(location.state.subcategory || "");
       setType(location.state.type);
       setDescription(location.state.description || "");
       setDesignMotif(location.state.designMotif || "");
@@ -263,16 +321,31 @@ const Product = () => {
 
   const isEditing = editId !== null;
 
-  // ==================== GET CATEGORIES ====================
+  // ==================== GET CATEGORIES & SUBCATEGORIES ====================
+  // The same endpoint the Categories page uses, so the product form always
+  // shows the categories and subcategories that were added in the panel.
+  // A category added afterwards shows up as soon as the form is loaded again.
 
   useEffect(() => {
+    const authHeaders = {
+      Authorization: localStorage.getItem("token"),
+    };
+
     axios
-      .get(`${API_URL}/public/categories`)
+      .get(`${API_URL}/categories`, { headers: authHeaders })
       .then((res) => {
-        setCategories(res.data);
+        setCategories((res.data || []).map(normalizeCategory));
       })
-      .catch((error) => {
-        console.log(error);
+      .catch(() => {
+        // Fallback for a backend that only exposes the public category list.
+        return axios
+          .get(`${API_URL}/public/categories`)
+          .then((res) => {
+            setCategories((res.data || []).map(normalizeCategory));
+          })
+          .catch((error) => {
+            console.log(error);
+          });
       });
   }, []);
 
@@ -440,10 +513,24 @@ const Product = () => {
                       <select
                         value={category}
                         onChange={(e) => {
-                          setCategory(e.target.value);
-                          setSubcategory("");
+                          const value = e.target.value;
 
-                          if (e.target.value) {
+                          setCategory(value);
+
+                          // The subcategory is only kept when it belongs to
+                          // the category that was just selected.
+                          const options =
+                            categories.find((item) => item.category === value)
+                              ?.subcategories || [];
+
+                          if (
+                            subcategory &&
+                            !options.includes(subcategory)
+                          ) {
+                            setSubcategory("");
+                          }
+
+                          if (value) {
                             setErrors((oldErrors) => ({
                               ...oldErrors,
                               category: "",
@@ -457,7 +544,7 @@ const Product = () => {
                       >
                         <option value="">Select Category</option>
 
-                        {categories.map((item) => (
+                        {categoryOptions.map((item) => (
                           <option key={item.id} value={item.category}>
                             {item.category}
                           </option>
@@ -498,7 +585,7 @@ const Product = () => {
                             }));
                           }
                         }}
-                        disabled={!category}
+                        disabled={!category || subcategoryOptions.length === 0}
                         className={`w-full rounded-xl border bg-white py-2.5 pl-10 pr-10 text-sm text-slate-700 shadow-sm outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-100 disabled:cursor-not-allowed disabled:bg-slate-100 ${
                           errors.subcategory
                             ? "border-red-300"
@@ -506,18 +593,18 @@ const Product = () => {
                         }`}
                       >
                         <option value="">
-                          {category
-                            ? "Select Subcategory"
-                            : "Select Category First"}
+                          {!category
+                            ? "Select Category First"
+                            : subcategoryOptions.length === 0
+                              ? "No subcategories available"
+                              : "Select Subcategory"}
                         </option>
 
-                        {categories
-                          .find((item) => item.category === category)
-                          ?.subcategories?.map((item, index) => (
-                            <option key={index} value={item}>
-                              {item}
-                            </option>
-                          ))}
+                        {subcategoryOptions.map((item) => (
+                          <option key={item} value={item}>
+                            {item}
+                          </option>
+                        ))}
                       </select>
 
                       <ChevronDown
