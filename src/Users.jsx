@@ -132,7 +132,7 @@ const Users = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-100 px-4 py-6 sm:px-6 lg:px-8">
+    <div className="admin-canvas min-h-screen px-4 py-6 sm:px-6 lg:px-8">
       <div className="mx-auto w-full max-w-7xl">
         {/* Breadcrumb */}
         <nav className="flex items-center gap-2 text-xs font-medium text-slate-400">

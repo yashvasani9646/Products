@@ -1,6 +1,24 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
+import {
+  Plus,
+  SquarePen,
+  ImageUp,
+  Eye,
+  Sparkles,
+  ShieldCheck,
+  LoaderCircle,
+  Trash,
+  Newspaper,
+  FileText,
+} from "lucide-react";
+
+const labelClass =
+  "mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-400";
+
+const inputClass =
+  "w-full rounded-xl border border-slate-200 bg-white py-2.5 px-3.5 text-sm text-slate-700 shadow-sm outline-none transition placeholder:text-slate-400 hover:border-slate-300 focus:border-blue-500 focus:ring-4 focus:ring-blue-100";
 
 const Blog = () => {
   const API_URL = import.meta.env.VITE_API_URL;
@@ -175,247 +193,480 @@ const Blog = () => {
     }
   };
 
-  return (
-    <div className="min-h-screen bg-gray-50 p-4 sm:p-6 lg:p-8">
-      <div className="mx-auto max-w-7xl">
+  const previewHeading =
+    content.find((item) => item.type === "heading" && item.value.trim())
+      ?.value || "Your blog heading will appear here";
 
+  const previewParagraph =
+    content.find((item) => item.type === "paragraph" && item.value.trim())
+      ?.value || "Your blog introduction will appear here.";
+
+  return (
+    <div className="admin-canvas min-h-screen px-4 py-6 sm:px-6 lg:px-8">
+      <div className="mx-auto w-full max-w-7xl">
         {/* ==================== PAGE TITLE ==================== */}
 
-        <div className="mb-6">
-          <h1 className="text-2xl font-bold text-gray-900">
-            Blog Management
-          </h1>
+        <nav className="flex items-center gap-2 text-xs font-medium text-slate-400">
+          <span>Content</span>
+          <span className="h-1 w-1 rounded-full bg-slate-300" />
+          <span className="text-slate-600">Blog management</span>
+        </nav>
 
-          <p className="mt-1 text-sm text-gray-500">
-            Create and manage your blogs
-          </p>
-        </div>
+        <div className="mt-3 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <div className="flex flex-wrap items-center gap-2.5">
+              <h1 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
+                Blog Management
+              </h1>
 
-        {/* ==================== ADD BLOG FORM ==================== */}
-
-        <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm sm:p-6">
-
-          <h2 className="mb-5 text-lg font-semibold text-gray-900">
-            Add Blog
-          </h2>
-
-          <form onSubmit={handleSubmit} className="space-y-5">
-
-            {/* TITLE */}
-
-            <div>
-              <label className="mb-2 block text-sm font-medium text-gray-700">
-                Blog Title
-              </label>
-
-              <input
-                type="text"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                placeholder="Enter blog title"
-                className="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-              />
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-blue-50 px-2.5 py-1 text-xs font-semibold text-blue-700 ring-1 ring-inset ring-blue-600/20">
+                <Newspaper size={12} />
+                Content studio
+              </span>
             </div>
 
-            {/* BLOG CONTENT */}
+            <p className="mt-1 text-sm text-slate-500">
+              Create and manage your blogs
+            </p>
+          </div>
 
-            <div>
-              <div className="mb-3 flex items-center justify-between">
-                <label className="block text-sm font-medium text-gray-700">
-                  Blog Content
-                </label>
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold text-slate-600 shadow-sm">
+              <Newspaper size={14} className="text-blue-500" />
+              {fetchLoading ? "Syncing..." : `${blogs.length} published`}
+            </span>
 
-                <div className="flex gap-2">
-                  <button
-                    type="button"
-                    onClick={addHeading}
-                    className="rounded-lg bg-purple-50 px-3 py-2 text-xs font-semibold text-purple-600 transition hover:bg-purple-100"
-                  >
-                    + Heading
-                  </button>
+            <span className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold text-slate-600 shadow-sm">
+              <FileText size={14} className="text-violet-500" />
+              {content.length} content blocks
+            </span>
+          </div>
+        </div>
 
-                  <button
-                    type="button"
-                    onClick={addParagraph}
-                    className="rounded-lg bg-blue-50 px-3 py-2 text-xs font-semibold text-blue-600 transition hover:bg-blue-100"
-                  >
-                    + Paragraph
-                  </button>
+        <div className="mt-6 grid grid-cols-1 gap-6 xl:grid-cols-3">
+          {/* ==================== ADD BLOG FORM ==================== */}
+
+          <div className="xl:col-span-2">
+            <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+              <div className="flex items-center gap-3 border-b border-slate-200 px-5 py-4">
+                <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
+                  <Plus size={18} />
+                </span>
+
+                <div>
+                  <h2 className="text-sm font-semibold text-slate-900">
+                    Add Blog
+                  </h2>
+
+                  <p className="text-xs text-slate-500">
+                    Compose a story for your storefront audience
+                  </p>
                 </div>
               </div>
 
-              <div className="space-y-4">
+              <form onSubmit={handleSubmit} className="p-5">
+                <div className="space-y-5">
+                  {/* TITLE */}
 
-                {content.map((item, index) => (
-                  <div
-                    key={index}
-                    className="rounded-xl border border-gray-200 bg-gray-50 p-4"
-                  >
+                  <div>
+                    <label className={labelClass}>Blog title</label>
 
-                    <div className="mb-2 flex items-center justify-between">
-                      <span
-                        className={`text-xs font-semibold ${
-                          item.type === "heading"
-                            ? "text-purple-600"
-                            : "text-blue-600"
-                        }`}
-                      >
-                        {item.type === "heading"
-                          ? "HEADING"
-                          : "PARAGRAPH"}
-                      </span>
+                    <div className="relative">
+                      <SquarePen
+                        size={18}
+                        className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"
+                      />
 
-                      {content.length > 1 && (
-                        <button
-                          type="button"
-                          onClick={() => deleteContent(index)}
-                          className="text-xs font-medium text-red-500 hover:text-red-700"
-                        >
-                          Remove
-                        </button>
-                      )}
-                    </div>
-
-                    {item.type === "heading" ? (
                       <input
                         type="text"
-                        value={item.value}
-                        onChange={(e) =>
-                          handleContentChange(
-                            index,
-                            e.target.value
-                          )
-                        }
-                        placeholder="Enter heading"
-                        className="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm font-semibold outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-100"
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value)}
+                        placeholder="Enter blog title"
+                        className={`${inputClass} pl-10`}
                       />
-                    ) : (
-                      <textarea
-                        value={item.value}
-                        onChange={(e) =>
-                          handleContentChange(
-                            index,
-                            e.target.value
-                          )
-                        }
-                        placeholder="Enter paragraph"
-                        rows={5}
-                        className="w-full resize-none rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm leading-6 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-                      />
-                    )}
+                    </div>
                   </div>
-                ))}
 
+                  {/* BLOG CONTENT */}
+
+                  <div>
+                    <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+                      <div>
+                        <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400">
+                          Blog content
+                        </label>
+
+                        <p className="mt-1 text-xs text-slate-500">
+                          Build the article with headings and paragraphs
+                        </p>
+                      </div>
+
+                      <div className="flex gap-2">
+                        <button
+                          type="button"
+                          onClick={addHeading}
+                          className="inline-flex items-center gap-1.5 rounded-lg border border-violet-200 bg-violet-50 px-3 py-2 text-xs font-semibold text-violet-700 transition hover:border-violet-300 hover:bg-violet-100"
+                        >
+                          <Plus size={14} />
+                          Heading
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={addParagraph}
+                          className="inline-flex items-center gap-1.5 rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-xs font-semibold text-blue-700 transition hover:border-blue-300 hover:bg-blue-100"
+                        >
+                          <Plus size={14} />
+                          Paragraph
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="space-y-3">
+                      {content.map((item, index) => (
+                        <div
+                          key={index}
+                          className="rounded-xl border border-slate-200 bg-slate-50/70 p-4"
+                        >
+                          <div className="mb-2.5 flex items-center justify-between gap-2">
+                            <span
+                              className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider ring-1 ring-inset ${
+                                item.type === "heading"
+                                  ? "bg-violet-50 text-violet-700 ring-violet-600/20"
+                                  : "bg-blue-50 text-blue-700 ring-blue-600/20"
+                              }`}
+                            >
+                              <span
+                                className={`h-1.5 w-1.5 rounded-full ${
+                                  item.type === "heading"
+                                    ? "bg-violet-500"
+                                    : "bg-blue-500"
+                                }`}
+                              />
+                              {item.type === "heading"
+                                ? "Heading"
+                                : "Paragraph"}
+                            </span>
+
+                            {content.length > 1 && (
+                              <button
+                                type="button"
+                                onClick={() => deleteContent(index)}
+                                className="inline-flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-semibold text-red-500 transition hover:bg-red-50 hover:text-red-700"
+                              >
+                                <Trash size={13} />
+                                Remove
+                              </button>
+                            )}
+                          </div>
+
+                          {item.type === "heading" ? (
+                            <input
+                              type="text"
+                              value={item.value}
+                              onChange={(e) =>
+                                handleContentChange(
+                                  index,
+                                  e.target.value
+                                )
+                              }
+                              placeholder="Enter heading"
+                              className={`${inputClass} font-semibold focus:border-violet-500 focus:ring-violet-100`}
+                            />
+                          ) : (
+                            <textarea
+                              value={item.value}
+                              onChange={(e) =>
+                                handleContentChange(
+                                  index,
+                                  e.target.value
+                                )
+                              }
+                              placeholder="Enter paragraph"
+                              rows={5}
+                              className={`${inputClass} resize-none leading-relaxed`}
+                            />
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* IMAGE */}
+
+                  <div>
+                    <label className={labelClass}>Blog image</label>
+
+                    <div className="relative overflow-hidden rounded-xl border-2 border-dashed border-slate-300 bg-slate-50/60 p-6 text-center transition hover:border-blue-400 hover:bg-blue-50/40">
+                      <input
+                        id="blogImage"
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageChange}
+                        className="absolute inset-0 z-10 h-full w-full cursor-pointer opacity-0"
+                      />
+
+                      {image ? (
+                        <div className="flex flex-col items-center">
+                          <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-white text-blue-600 shadow-sm ring-1 ring-slate-200">
+                            <ImageUp size={22} />
+                          </span>
+
+                          <p className="mt-3 max-w-full truncate text-sm font-semibold text-slate-700">
+                            {image.name}
+                          </p>
+
+                          <p className="mt-1 text-xs text-slate-400">
+                            Click to choose a different image
+                          </p>
+                        </div>
+                      ) : (
+                        <>
+                          <span className="mx-auto flex h-11 w-11 items-center justify-center rounded-xl bg-white text-slate-400 shadow-sm ring-1 ring-slate-200">
+                            <ImageUp size={20} />
+                          </span>
+
+                          <p className="mt-3 text-sm text-slate-600">
+                            <span className="font-semibold text-blue-600">
+                              Click to upload
+                            </span>{" "}
+                            or drag and drop
+                          </p>
+
+                          <p className="mt-1 text-xs text-slate-400">
+                            PNG, JPG or GIF for your blog cover
+                          </p>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* BUTTON */}
+
+                <div className="mt-6 flex flex-col gap-3 border-t border-slate-200 pt-5 sm:flex-row">
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="inline-flex flex-1 items-center justify-center gap-2 rounded-xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white shadow-sm shadow-blue-600/20 transition hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-100 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    {loading ? (
+                      <LoaderCircle size={18} className="animate-spin" />
+                    ) : (
+                      <Plus size={18} />
+                    )}
+
+                    {loading ? "Adding Blog..." : "Add Blog"}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          {/* ==================== PREVIEW & TIPS ==================== */}
+
+          <div className="space-y-6">
+            <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+              <div className="flex items-center gap-2 border-b border-slate-200 px-5 py-4">
+                <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-100 text-slate-500">
+                  <Eye size={16} />
+                </span>
+
+                <h2 className="text-sm font-semibold text-slate-800">
+                  Live preview
+                </h2>
+              </div>
+
+              <div className="p-5">
+                <div className="flex h-36 items-center justify-center overflow-hidden rounded-xl border border-slate-200 bg-slate-50">
+                  <div className="text-center">
+                    <ImageUp size={26} className="mx-auto text-slate-300" />
+
+                    <p className="mt-2 max-w-[12rem] truncate text-xs text-slate-400">
+                      {image ? image.name : "Cover image preview"}
+                    </p>
+                  </div>
+                </div>
+
+                <h3 className="mt-4 line-clamp-2 text-base font-semibold text-slate-900">
+                  {title || "Your blog title"}
+                </h3>
+
+                <p className="mt-2 line-clamp-2 text-sm text-slate-500">
+                  {previewHeading}
+                </p>
+
+                <p className="mt-1.5 line-clamp-4 text-sm leading-relaxed text-slate-500">
+                  {previewParagraph}
+                </p>
+
+                <div className="mt-4 flex flex-wrap gap-2">
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-blue-50 px-2.5 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-600/20">
+                    {content.length} blocks
+                  </span>
+
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-violet-50 px-2.5 py-1 text-xs font-medium text-violet-700 ring-1 ring-inset ring-violet-600/20">
+                    {
+                      content.filter(
+                        (item) => item.value.trim() !== ""
+                      ).length
+                    }{" "}
+                    filled
+                  </span>
+                </div>
               </div>
             </div>
 
-            {/* IMAGE */}
+            <div className="rounded-2xl border border-blue-100 bg-blue-50/60 p-5">
+              <div className="flex items-center gap-2">
+                <Sparkles size={16} className="text-blue-600" />
 
-            <div>
-              <label className="mb-2 block text-sm font-medium text-gray-700">
-                Blog Image
-              </label>
+                <h2 className="text-sm font-semibold text-blue-900">
+                  Good to know
+                </h2>
+              </div>
 
-              <input
-                id="blogImage"
-                type="file"
-                accept="image/*"
-                onChange={handleImageChange}
-                className="block w-full rounded-xl border border-gray-300 bg-white text-sm text-gray-600 file:mr-4 file:border-0 file:bg-blue-50 file:px-4 file:py-3 file:text-sm file:font-medium file:text-blue-600 hover:file:bg-blue-100"
-              />
+              <ul className="mt-3 space-y-2.5 text-sm text-blue-900/80">
+                <li className="flex gap-2">
+                  <ShieldCheck
+                    size={16}
+                    className="mt-0.5 shrink-0 text-blue-500"
+                  />
+                  Add headings to break long articles into scannable sections.
+                </li>
 
-              {image && (
-                <p className="mt-2 text-sm text-gray-500">
-                  Selected: {image.name}
-                </p>
-              )}
+                <li className="flex gap-2">
+                  <ShieldCheck
+                    size={16}
+                    className="mt-0.5 shrink-0 text-blue-500"
+                  />
+                  Paragraphs are saved in the same order you arrange them.
+                </li>
+
+                <li className="flex gap-2">
+                  <ShieldCheck
+                    size={16}
+                    className="mt-0.5 shrink-0 text-blue-500"
+                  />
+                  A title, cover image and content are required to publish.
+                </li>
+              </ul>
             </div>
-
-            {/* BUTTON */}
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="rounded-xl bg-blue-600 px-6 py-3 text-sm font-semibold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              {loading ? "Adding Blog..." : "Add Blog"}
-            </button>
-          </form>
+          </div>
         </div>
 
         {/* ==================== BLOG LIST ==================== */}
 
-        <div className="mt-8 rounded-2xl border border-gray-200 bg-white p-5 shadow-sm sm:p-6">
+        <div className="mt-6 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 px-5 py-4">
+            <div className="flex items-center gap-2">
+              <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-100 text-slate-500">
+                <Newspaper size={16} />
+              </span>
 
-          <div className="mb-5 flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-gray-900">
-              Blogs
-            </h2>
+              <h2 className="text-sm font-semibold text-slate-800">
+                Published blogs
+              </h2>
 
-            <span className="rounded-full bg-blue-50 px-3 py-1 text-sm font-medium text-blue-600">
-              {blogs.length} Blogs
-            </span>
+              <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-semibold text-slate-600 tabular-nums">
+                {fetchLoading ? "..." : blogs.length}
+              </span>
+            </div>
+
+            <p className="text-xs text-slate-400">
+              Live content from your storefront
+            </p>
           </div>
 
-          {fetchLoading ? (
-            <div className="py-10 text-center text-sm text-gray-500">
-              Loading blogs...
-            </div>
-          ) : blogs.length === 0 ? (
-            <div className="rounded-xl border border-dashed border-gray-300 py-10 text-center">
-              <p className="text-sm text-gray-500">
-                No blogs available
-              </p>
-            </div>
-          ) : (
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="p-5">
+            {fetchLoading ? (
+              <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+                {[0, 1, 2].map((index) => (
+                  <div
+                    key={index}
+                    className="overflow-hidden rounded-2xl border border-slate-200 bg-white"
+                  >
+                    <div className="h-44 animate-pulse bg-slate-100" />
 
-              {blogs.map((blog) => (
-                <div
-                  key={blog.id}
-                  className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition hover:shadow-md"
-                >
-
-                  {/* IMAGE */}
-
-                  <div className="h-48 w-full overflow-hidden bg-gray-100">
-                    <img
-                      src={blog.image}
-                      alt={blog.title}
-                      className="h-full w-full object-cover"
-                    />
+                    <div className="space-y-3 p-5">
+                      <div className="h-4 w-3/4 animate-pulse rounded bg-slate-100" />
+                      <div className="h-3 w-full animate-pulse rounded bg-slate-100" />
+                      <div className="h-3 w-5/6 animate-pulse rounded bg-slate-100" />
+                    </div>
                   </div>
+                ))}
+              </div>
+            ) : blogs.length === 0 ? (
+              <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50/50 px-6 py-16 text-center">
+                <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-slate-400 shadow-sm ring-1 ring-slate-200">
+                  <Newspaper size={24} />
+                </span>
 
-                  {/* CONTENT */}
+                <h3 className="mt-4 text-base font-semibold text-slate-800">
+                  No blogs available
+                </h3>
 
-                  <div className="p-5">
+                <p className="mt-1.5 text-sm text-slate-500">
+                  Add your first blog using the form above.
+                </p>
+              </div>
+            ) : (
+              <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+                {blogs.map((blog) => (
+                  <article
+                    key={blog.id}
+                    className="group overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-lg hover:shadow-slate-900/5"
+                  >
+                    {/* IMAGE */}
 
-                    <h3 className="line-clamp-2 text-lg font-semibold text-gray-900">
-                      {blog.title}
-                    </h3>
+                    <div className="relative h-44 w-full overflow-hidden bg-slate-100">
+                      <img
+                        src={blog.image}
+                        alt={blog.title}
+                        className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
+                      />
 
-                    <p className="mt-3 line-clamp-4 text-sm leading-6 text-gray-500">
-                      {(() => {
-                        try {
-                          const parsed = JSON.parse(
-                            blog.description
-                          );
+                      <span className="absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full bg-white/90 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-700 shadow-sm backdrop-blur">
+                        <Newspaper size={11} className="text-blue-600" />
+                        Article
+                      </span>
+                    </div>
 
-                          return parsed
-                            .map((item) => item.value)
-                            .join(" ");
-                        } catch {
-                          return blog.description;
-                        }
-                      })()}
-                    </p>
+                    {/* CONTENT */}
 
-                  </div>
-                </div>
-              ))}
+                    <div className="p-5">
+                      <h3 className="line-clamp-2 text-base font-semibold text-slate-900">
+                        {blog.title}
+                      </h3>
 
-            </div>
-          )}
+                      <p className="mt-2.5 line-clamp-4 text-sm leading-relaxed text-slate-500">
+                        {(() => {
+                          try {
+                            const parsed = JSON.parse(
+                              blog.description
+                            );
+
+                            return parsed
+                              .map((item) => item.value)
+                              .join(" ");
+                          } catch {
+                            return blog.description;
+                          }
+                        })()}
+                      </p>
+
+                      <div className="mt-4 flex items-center gap-2 border-t border-slate-100 pt-3 text-[11px] font-medium text-slate-400">
+                        <span className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-50 text-blue-600">
+                          <FileText size={12} />
+                        </span>
+                        Published story
+                      </div>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>

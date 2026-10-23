@@ -39,7 +39,7 @@ function DashboardLayout() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="admin-canvas min-h-screen">
       <Header
         menuOpen={menuOpen}
         onMenuToggle={() => setMenuOpen((prev) => !prev)}

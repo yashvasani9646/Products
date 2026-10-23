@@ -350,7 +350,7 @@ const Product = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-slate-100 px-4 py-6 sm:px-6 lg:px-8">
+    <div className="admin-canvas min-h-screen px-4 py-6 sm:px-6 lg:px-8">
       <div className="mx-auto w-full max-w-7xl">
         <nav className="flex items-center gap-2 text-xs font-medium text-slate-400">
           <span>Catalog</span>
@@ -381,7 +381,7 @@ const Product = () => {
               <p className="text-xs text-slate-500">{user?.email}</p>
             </div>
 
-            <span className="flex h-11 w-11 items-center justify-center rounded-full bg-blue-600 text-sm font-semibold text-white shadow-sm">
+            <span className="flex h-11 w-11 items-center justify-center rounded-full bg-gradient-to-br from-blue-600 to-indigo-600 text-sm font-bold text-white shadow-md shadow-blue-600/20 ring-2 ring-white">
               {user?.name?.charAt(0).toUpperCase()}
             </span>
 

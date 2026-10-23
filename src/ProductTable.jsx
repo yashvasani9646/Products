@@ -18,8 +18,11 @@ import {
   TriangleAlert,
   ImageOff,
   Boxes,
+  Download,
+  LoaderCircle,
 } from "lucide-react";
 import axios from "axios";
+import writeExcelFile from "write-excel-file/browser";
 
 const CATEGORY_TONES = {
   Electronics: "bg-sky-50 text-sky-700 ring-sky-600/20",
@@ -95,6 +98,7 @@ const ProductTable = () => {
   });
   const [search, setSearch] = useState("");
   const [deleteId, setDeleteId] = useState(null);
+  const [exporting, setExporting] = useState(false);
 
   useEffect(() => {
     axios
@@ -149,6 +153,87 @@ const ProductTable = () => {
     });
   };
 
+  const handleExportToExcel = async () => {
+    if (exporting) return;
+
+    setExporting(true);
+
+    try {
+      const response = await axios.get(`${API_URL}/products`, {
+        headers: {
+          Authorization: localStorage.getItem("token"),
+        },
+      });
+
+      let productList = response?.data;
+      if (productList && !Array.isArray(productList)) {
+        if (Array.isArray(productList.products)) {
+          productList = productList.products;
+        } else if (Array.isArray(productList.data)) {
+          productList = productList.data;
+        } else if (Array.isArray(productList.items)) {
+          productList = productList.items;
+        } else if (Array.isArray(productList.result)) {
+          productList = productList.result;
+        } else {
+          productList = [];
+        }
+      }
+
+      if (!Array.isArray(productList) || productList.length === 0) {
+        toast.error("No products available to export");
+        setExporting(false);
+        return;
+      }
+
+      const exportData = productList.map((item) => ({
+        id: item?.id ?? item?._id ?? "",
+        product: item?.product ?? item?.name ?? "",
+        price: item?.price ?? "",
+        category: item?.category ?? "",
+        subcategory: item?.subcategory ?? "",
+        type: item?.type ?? "",
+        available: item?.available === true ? "Available" : item?.available === false ? "Not Available" : item?.availability ?? "",
+        description: item?.description ?? "",
+        designMotif: item?.designMotif ?? "",
+        centerpieceStone: item?.centerpieceStone ?? "",
+        earringStyle: item?.earringStyle ?? "",
+        embellishments: item?.embellishments ?? "",
+        finish: item?.finish ?? "",
+      }));
+
+      const columns = [
+        { header: "Product ID", cell: (row) => ({ value: row.id }) },
+        { header: "Product Name", cell: (row) => ({ value: row.product }) },
+        { header: "Price", cell: (row) => ({ value: row.price }) },
+        { header: "Category", cell: (row) => ({ value: row.category }) },
+        { header: "Subcategory", cell: (row) => ({ value: row.subcategory }) },
+        { header: "Type", cell: (row) => ({ value: row.type }) },
+        { header: "Availability", cell: (row) => ({ value: row.available }) },
+        { header: "Description", cell: (row) => ({ value: row.description }) },
+        { header: "Design Motif", cell: (row) => ({ value: row.designMotif }) },
+        { header: "Centerpiece Stone", cell: (row) => ({ value: row.centerpieceStone }) },
+        { header: "Earring Style", cell: (row) => ({ value: row.earringStyle }) },
+        { header: "Embellishments", cell: (row) => ({ value: row.embellishments }) },
+        { header: "Finish", cell: (row) => ({ value: row.finish }) },
+      ];
+
+      const date = new Date();
+      const yyyy = date.getFullYear();
+      const mm = String(date.getMonth() + 1).padStart(2, "0");
+      const dd = String(date.getDate()).padStart(2, "0");
+      const filename = `products-${yyyy}-${mm}-${dd}.xlsx`;
+
+      await writeExcelFile(exportData, { columns }).toFile(filename);
+      toast.success("Products exported successfully");
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to export products");
+    } finally {
+      setExporting(false);
+    }
+  };
+
   const selectField = (label, value, onChange, options, width) => (
     <div className={width}>
       <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-400">
@@ -177,7 +262,7 @@ const ProductTable = () => {
   );
 
   return (
-    <div className="min-h-screen bg-slate-100 px-4 py-6 sm:px-6 lg:px-8">
+    <div className="admin-canvas min-h-screen px-4 py-6 sm:px-6 lg:px-8">
       <div className="mx-auto w-full max-w-7xl">
         <nav className="flex items-center gap-2 text-xs font-medium text-slate-400">
           <span>Catalog</span>
@@ -196,13 +281,27 @@ const ProductTable = () => {
             </p>
           </div>
 
-          <button
-            onClick={() => navigate("/product")}
-            className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm shadow-blue-600/20 transition hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-100 active:scale-[0.98] sm:w-auto"
-          >
-            <Plus size={18} />
-            Add product
-          </button>
+          <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
+            <button
+              onClick={handleExportToExcel}
+              disabled={exporting}
+              className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-emerald-200 hover:bg-emerald-50 hover:text-emerald-700 focus:outline-none focus:ring-4 focus:ring-emerald-100 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
+            >
+              {exporting ? (
+                <LoaderCircle size={18} className="animate-spin" />
+              ) : (
+                <Download size={18} />
+              )}
+              {exporting ? "Exporting..." : "Export to Excel"}
+            </button>
+            <button
+              onClick={() => navigate("/product")}
+              className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm shadow-blue-600/20 transition hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-100 active:scale-[0.98] sm:w-auto"
+            >
+              <Plus size={18} />
+              Add product
+            </button>
+          </div>
         </div>
 
         <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -328,12 +427,25 @@ const ProductTable = () => {
               )}
             </div>
 
-            <div className="xl:pb-0 xl:ml-auto">
+            <div className="flex w-full flex-col gap-2 sm:flex-row sm:items-center xl:pb-0 xl:ml-auto xl:mt-[26px] xl:w-auto">
+              <button
+                type="button"
+                onClick={handleExportToExcel}
+                disabled={exporting}
+                className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-emerald-200 bg-white px-4 py-2.5 text-sm font-semibold text-emerald-700 shadow-sm transition hover:border-emerald-300 hover:bg-emerald-50 disabled:cursor-not-allowed disabled:opacity-60 xl:w-auto"
+              >
+                {exporting ? (
+                  <LoaderCircle size={16} className="animate-spin" />
+                ) : (
+                  <Download size={16} />
+                )}
+                {exporting ? "Exporting..." : "Export to Excel"}
+              </button>
               <button
                 type="button"
                 onClick={resetFilters}
                 disabled={!hasFilters}
-                className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-600 shadow-sm transition hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-white xl:mt-[26px] xl:w-auto"
+                className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-600 shadow-sm transition hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-white xl:w-auto"
               >
                 <RotateCcw size={16} />
                 Reset
@@ -350,7 +462,7 @@ const ProductTable = () => {
               </span>
 
               <h2 className="text-sm font-semibold text-slate-800">
-                Product list
+                All Products
               </h2>
 
               <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-semibold text-slate-600 tabular-nums">
