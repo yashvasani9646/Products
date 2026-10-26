@@ -12,14 +12,14 @@ import {
   Layers,
   ChevronDown,
 } from "lucide-react";
-import axios from "axios";
+import axios from "axios"; 
 import CustomSelect from "./components/CustomSelect";
 
 const labelClass =
   "mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-400";
 
 const fieldClass = (hasError) =>
-  `w-full rounded-xl border bg-white py-2.5 pl-10 pr-3.5 text-sm text-slate-700 shadow-sm outline-none transition placeholder:text-slate-400 hover:border-slate-300 focus:ring-4 ${
+  `w-full rounded-xl border bg-white  py-2.5 pl-10 pr-3.5 text-sm text-slate-700 shadow-sm outline-none transition placeholder:text-slate-400 hover:border-slate-300 focus:ring-4 ${
     hasError
       ? "border-red-300 focus:border-red-500 focus:ring-red-100"
       : "border-slate-200 focus:border-blue-500 focus:ring-blue-100"
@@ -347,7 +347,6 @@ const Subcategory = () => {
                       }));
                     }
                   }}
-                  disabled={isEditing}
                   options={[
                     { value: "", label: "Select Category" },
                     ...Array.from(
