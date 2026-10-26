@@ -29,6 +29,11 @@ const ErrorText = ({ children }) => (
   </p>
 );
 
+const normalizeCategoryName = (value) =>
+  String(value ?? "")
+    .trim()
+    .toLowerCase();
+
 const Category = () => {
   const API_URL = import.meta.env.VITE_API_URL;
   const navigate = useNavigate();
@@ -40,8 +45,24 @@ const Category = () => {
   const [imagePreview, setImagePreview] = useState(null);
   const [editId, setEditId] = useState(null);
   const [errors, setErrors] = useState({});
+  const [categories, setCategories] = useState([]);
 
   const isEditing = editId !== null;
+
+  useEffect(() => {
+    axios
+      .get(`${API_URL}/categories`, {
+        headers: {
+          Authorization: localStorage.getItem("token"),
+        },
+      })
+      .then((response) => {
+        setCategories(response.data);
+      })
+      .catch(() => {
+        setCategories([]);
+      });
+  }, [API_URL]);
 
   useEffect(() => {
     if (location.state) {
@@ -77,6 +98,22 @@ const Category = () => {
 
     if (!image && !isEditing) {
       newErrors.image = "Category image is required";
+    }
+
+    const normalizedName = normalizeCategoryName(category);
+    const originalName = normalizeCategoryName(location.state?.category);
+    const nameChanged = !isEditing || normalizedName !== originalName;
+
+    if (!newErrors.category && nameChanged) {
+      const duplicate = categories.find(
+        (item) =>
+          (!isEditing || String(item.id) !== String(editId)) &&
+          normalizeCategoryName(item.category) === normalizedName,
+      );
+
+      if (duplicate) {
+        newErrors.category = "Category already exists";
+      }
     }
 
     setErrors(newErrors);

@@ -10,6 +10,7 @@ import {
   X,
   ChevronDown,
   Tags,
+  Layers,
   PackageCheck,
   PackageX,
   Image as ImageIcon,
@@ -17,13 +18,14 @@ import {
   RotateCcw,
   TriangleAlert,
   ImageOff,
-  Layers,
+  Boxes,
   FolderTree,
 } from "lucide-react";
 import axios from "axios";
+import { filterSelectClass } from "./utils/dropdownStyles";
+import CustomSelect from "./components/CustomSelect";
 
-const selectClass =
-  "w-full appearance-none rounded-xl border border-slate-200 bg-white py-2.5 pl-3.5 pr-10 text-sm font-medium text-slate-700 shadow-sm outline-none transition cursor-pointer hover:border-slate-300 focus:border-blue-500 focus:ring-4 focus:ring-blue-100";
+const selectClass = filterSelectClass;
 
 // A subcategory row of the admin table.
 const toRow = (item, parentId, parentCategory, fallbackId) => ({
@@ -206,20 +208,16 @@ const SubcategoryTable = () => {
         {label}
       </label>
 
-      <div className="relative">
-        <select value={value} onChange={onChange} className={selectClass}>
-          {options.map((option) => (
-            <option key={option} value={option}>
-              {option}
-            </option>
-          ))}
-        </select>
-
-        <ChevronDown
-          size={16}
-          className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400"
-        />
-      </div>
+      <CustomSelect
+        value={value}
+        onChange={onChange}
+        options={(options || []).map((option, index) => ({
+          value: option,
+          label: option,
+        }))}
+        placeholder={value}
+        triggerClassName="py-2.5"
+      />
     </div>
   );
 

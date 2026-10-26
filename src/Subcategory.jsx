@@ -5,14 +5,15 @@ import {
   Plus,
   SquarePen,
   Tags,
-  FolderTree,
   ImageUp,
   ArrowLeft,
   CircleAlert,
   Check,
+  Layers,
   ChevronDown,
 } from "lucide-react";
 import axios from "axios";
+import CustomSelect from "./components/CustomSelect";
 
 const labelClass =
   "mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-400";
@@ -334,42 +335,39 @@ const Subcategory = () => {
               <div>
                 <label className={labelClass}>Parent category</label>
 
-                <div className="relative">
-                  <FolderTree
-                    size={18}
-                    className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"
-                  />
+                <CustomSelect
+                  value={parentId}
+                  onChange={(e) => {
+                    setParentId(e.target.value);
 
-                  <select
-                    value={parentId}
-                    onChange={(e) => {
-                      setParentId(e.target.value);
-
-                      if (e.target.value) {
-                        setErrors((oldErrors) => ({
-                          ...oldErrors,
-                          parentId: "",
-                        }));
-                      }
-                    }}
-                    className={`${fieldClass(
-                      errors.parentId,
-                    )} cursor-pointer appearance-none pr-10`}
-                  >
-                    <option value="">Select Category</option>
-
-                    {categories.map((category) => (
-                      <option key={category.id} value={String(category.id)}>
-                        {category.category}
-                      </option>
-                    ))}
-                  </select>
-
-                  <ChevronDown
-                    size={16}
-                    className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400"
-                  />
-                </div>
+                    if (e.target.value) {
+                      setErrors((oldErrors) => ({
+                        ...oldErrors,
+                        parentId: "",
+                      }));
+                    }
+                  }}
+                  disabled={isEditing}
+                  options={[
+                    { value: "", label: "Select Category" },
+                    ...Array.from(
+                      new Map(
+                        (categories || []).map((category) => [
+                          String(category.id),
+                          category,
+                        ]),
+                      ).values(),
+                    ).map((category) => ({
+                      value: String(category.id),
+                      label: category.category,
+                      image: category.image || "",
+                    })),
+                  ]}
+                  placeholder="Select Category"
+                  hasError={!!errors.parentId}
+                  icon={Layers}
+                  showImage
+                />
 
                 {errors.parentId && <ErrorText>{errors.parentId}</ErrorText>}
               </div>

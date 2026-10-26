@@ -17,6 +17,8 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import axios from "axios";
+import { dropdownWrapperClass } from "./utils/dropdownStyles";
+import CustomSelect from "./components/CustomSelect";
 
 const CATEGORY_TONES = {
   Electronics: "bg-sky-50 text-sky-700 ring-sky-600/20",
@@ -65,6 +67,7 @@ const normalizeCategory = (entry) => ({
   id: entry?.id,
   category: entry?.category || "",
   subcategories: normalizeSubcategories(entry?.subcategories),
+  image: entry?.image || "",
 });
 
 const Product = () => {
@@ -504,62 +507,46 @@ const Product = () => {
                   <div>
                     <label className={labelClass}>Category</label>
 
-                    <div className="relative">
-                      <Tags
-                        size={18}
-                        className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"
-                      />
+                    <CustomSelect
+                      value={category}
+                      onChange={(e) => {
+                        const value = e.target.value;
 
-                      <select
-                        value={category}
-                        onChange={(e) => {
-                          const value = e.target.value;
+                        setCategory(value);
 
-                          setCategory(value);
+                        // The subcategory is only kept when it belongs to
+                        // the category that was just selected.
+                        const opts =
+                          categories.find((item) => item.category === value)
+                            ?.subcategories || [];
 
-                          // The subcategory is only kept when it belongs to
-                          // the category that was just selected.
-                          const options =
-                            categories.find((item) => item.category === value)
-                              ?.subcategories || [];
+                        if (subcategory && !opts.includes(subcategory)) {
+                          setSubcategory("");
+                        }
 
-                          if (
-                            subcategory &&
-                            !options.includes(subcategory)
-                          ) {
-                            setSubcategory("");
-                          }
+                        if (value) {
+                          setErrors((oldErrors) => ({
+                            ...oldErrors,
+                            category: "",
+                            subcategory: "",
+                          }));
+                        }
+                      }}
+                      options={[
+                        { value: "", label: "Select Category" },
+                        ...categoryOptions.map((item) => ({
+                          value: item.category,
+                          label: item.category,
+                          image: item.image,
+                        })),
+                      ]}
+                      placeholder="Select Category"
+                      hasError={!!errors.category}
+                      icon={Tags}
+                      showImage
+                    />
 
-                          if (value) {
-                            setErrors((oldErrors) => ({
-                              ...oldErrors,
-                              category: "",
-                              subcategory: "",
-                            }));
-                          }
-                        }}
-                        className={`${fieldClass(
-                          errors.category,
-                        )} cursor-pointer appearance-none pr-10`}
-                      >
-                        <option value="">Select Category</option>
-
-                        {categoryOptions.map((item) => (
-                          <option key={item.id} value={item.category}>
-                            {item.category}
-                          </option>
-                        ))}
-                      </select>
-
-                      <ChevronDown
-                        size={16}
-                        className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400"
-                      />
-                    </div>
-
-                    {errors.category && (
-                      <ErrorText>{errors.category}</ErrorText>
-                    )}
+                    {errors.category && <ErrorText>{errors.category}</ErrorText>}
                   </div>
 
                   {/* SUBCATEGORY */}
@@ -567,51 +554,43 @@ const Product = () => {
                   <div>
                     <label className={labelClass}>Subcategory</label>
 
-                    <div className="relative">
-                      <Tags
-                        size={18}
-                        className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"
-                      />
+                    <CustomSelect
+                      value={subcategory}
+                      onChange={(e) => {
+                        setSubcategory(e.target.value);
 
-                      <select
-                        value={subcategory}
-                        onChange={(e) => {
-                          setSubcategory(e.target.value);
-
-                          if (e.target.value) {
-                            setErrors((oldErrors) => ({
-                              ...oldErrors,
-                              subcategory: "",
-                            }));
-                          }
-                        }}
-                        disabled={!category || subcategoryOptions.length === 0}
-                        className={`w-full rounded-xl border bg-white py-2.5 pl-10 pr-10 text-sm text-slate-700 shadow-sm outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-100 disabled:cursor-not-allowed disabled:bg-slate-100 ${
-                          errors.subcategory
-                            ? "border-red-300"
-                            : "border-slate-200"
-                        }`}
-                      >
-                        <option value="">
-                          {!category
+                        if (e.target.value) {
+                          setErrors((oldErrors) => ({
+                            ...oldErrors,
+                            subcategory: "",
+                          }));
+                        }
+                      }}
+                      disabled={!category || subcategoryOptions.length === 0}
+                      options={[
+                        {
+                          value: "",
+                          label: !category
                             ? "Select Category First"
                             : subcategoryOptions.length === 0
                               ? "No subcategories available"
-                              : "Select Subcategory"}
-                        </option>
-
-                        {subcategoryOptions.map((item) => (
-                          <option key={item} value={item}>
-                            {item}
-                          </option>
-                        ))}
-                      </select>
-
-                      <ChevronDown
-                        size={16}
-                        className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400"
-                      />
-                    </div>
+                              : "Select Subcategory",
+                        },
+                        ...subcategoryOptions.map((item) => ({
+                          value: item,
+                          label: item,
+                        })),
+                      ]}
+                      placeholder={
+                        !category
+                          ? "Select Category First"
+                          : subcategoryOptions.length === 0
+                            ? "No subcategories available"
+                            : "Select Subcategory"
+                      }
+                      hasError={!!errors.subcategory}
+                      icon={Tags}
+                    />
 
                     {errors.subcategory && (
                       <ErrorText>{errors.subcategory}</ErrorText>
