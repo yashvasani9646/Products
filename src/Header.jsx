@@ -89,7 +89,7 @@ const Header = ({ onMenuToggle, menuOpen }) => {
     localStorage.removeItem("user");
     setUser(null);
     setMenuOpenState(false);
-    navigate("/register", { replace: true });
+    navigate("/login", { replace: true });
   };
 
   const initial = user?.name?.charAt(0).toUpperCase() || "?";
